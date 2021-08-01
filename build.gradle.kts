@@ -14,8 +14,13 @@ repositories {
     maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
     maven { setUrl("https://jitpack.io") }
     maven {
-        name = "Valkyrien Skies Internal"
-        setUrl("https://maven.valkyrienskies.org/repository/internal/")
+        name = "Github Packages Krunch"
+        setUrl("https://maven.pkg.github.com/ValkyrienSkies/Krunch-Physics-Engine")
+        // Use VS Machine User account to download from github packages
+        credentials {
+            username = "valkyrienskies-machineuser"
+            password = "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"
+        }
     }
 }
 
