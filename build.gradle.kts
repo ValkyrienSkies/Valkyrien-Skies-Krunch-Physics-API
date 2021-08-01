@@ -31,13 +31,8 @@ repositories {
     maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
     maven { setUrl("https://jitpack.io") }
     maven {
-        name = "Github Packages Krunch"
-        setUrl("https://maven.pkg.github.com/ValkyrienSkies/Krunch-Physics-Engine")
-        // Use VS Machine User account to download from github packages
-        credentials {
-            username = "valkyrienskies-machineuser"
-            password = "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"
-        }
+        name = "Valkyrien Skies Internal"
+        setUrl("https://maven.valkyrienskies.org/repository/internal/")
     }
 }
 
@@ -46,7 +41,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // VS Physics API
-    implementation("com.github.ValkyrienSkies:Valkyrien-Skies-Physics-API:4b8cbef1acbc31c4543f2a239440dfbb8c8c7f08")
+    implementation("org.valkyrienskies:physics_api:1.0.0+7c9093b0d3")
 
     // Krunch
     implementation("org.valkyrienskies:krunch:1.0.0+c00eb987f1")
