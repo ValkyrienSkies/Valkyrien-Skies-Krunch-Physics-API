@@ -1,2 +1,2 @@
-# Valkyrien-Skies-Kronch-Physics-API
-Implementation of Valkyrien-Skies-Physics-API using Kronch
+# Valkyrien-Skies-Krunch-Physics-API
+Implementation of Valkyrien-Skies-Physics-API using Krunch
