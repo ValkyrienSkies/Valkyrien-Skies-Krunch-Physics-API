@@ -4,10 +4,27 @@ plugins {
     java
     maven
     checkstyle
+    `maven-publish`
 }
 
 group = "org.valkyrienskies.physics_api_krunch"
-version = "1.0"
+// Determine the version
+if (project.hasProperty("CustomReleaseVersion")) {
+    version = project.property("CustomReleaseVersion") as String
+} else {
+    // Yes, I know there is a gradle plugin to detect git version.
+    // But its made by Palantir 0_0.
+    val gitRevisionProcess = Runtime.getRuntime().exec("git rev-parse HEAD", emptyArray(), File("."))
+    val processInputStream = gitRevisionProcess.inputStream
+
+    var gitRevision = ""
+    while (true) {
+        val lastReadByte = processInputStream.read()
+        if (lastReadByte == -1) break
+        gitRevision += lastReadByte.toChar()
+    }
+    version = "1.0.0+" + gitRevision.substring(0, 10)
+}
 
 repositories {
     mavenCentral()
@@ -89,6 +106,53 @@ tasks {
         useJUnitPlatform()
         testLogging {
             events("passed", "skipped", "failed")
+        }
+    }
+}
+
+// Publish javadoc and sources to maven
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    repositories {
+        val ghpUser = (project.findProperty("gpr.user") ?: System.getenv("USERNAME")) as String?
+        val ghpPassword = (project.findProperty("gpr.key") ?: System.getenv("TOKEN")) as String?
+        // Publish to Github Packages
+        if (ghpUser != null && ghpPassword != null) {
+            maven {
+                name = "GithubPackages"
+                url = uri("https://maven.pkg.github.com/ValkyrienSkies/Valkyrien-Skies-Krunch-Physics-API")
+                credentials {
+                    username = ghpUser
+                    password = ghpPassword
+                }
+            }
+        }
+
+        // Publish to VS maven
+        if ((System.getenv("VS_MAVEN_USERNAME") != null) and (System.getenv("VS_MAVEN_PASSWORD") != null)) {
+            maven {
+                name = "ValkyrienSkiesMaven"
+                url = uri("https://maven.valkyrienskies.org/repository/internal/")
+                credentials {
+                    username = System.getenv("VS_MAVEN_USERNAME")
+                    password = System.getenv("VS_MAVEN_PASSWORD")
+                }
+            }
+        }
+    }
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = "org.valkyrienskies"
+                artifactId = "krunch"
+                version = project.version as String
+
+                from(components["java"])
+            }
         }
     }
 }
