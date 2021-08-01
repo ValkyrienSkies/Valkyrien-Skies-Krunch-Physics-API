@@ -148,7 +148,7 @@ publishing {
         publications {
             create<MavenPublication>("maven") {
                 groupId = "org.valkyrienskies"
-                artifactId = "krunch"
+                artifactId = "physics_api_krunch"
                 version = project.version as String
 
                 from(components["java"])
