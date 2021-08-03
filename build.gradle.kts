@@ -41,7 +41,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // VS Physics API
-    implementation("org.valkyrienskies:physics_api:1.0.0+7c9093b0d3")
+    api("org.valkyrienskies:physics_api:1.0.0+7c9093b0d3")
 
     // Krunch
     implementation("org.valkyrienskies:krunch:1.0.0+c00eb987f1")
