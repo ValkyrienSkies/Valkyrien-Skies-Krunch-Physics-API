@@ -41,10 +41,10 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // VS Physics API
-    api("org.valkyrienskies:physics_api:1.0.0+01597524ac")
+    api("org.valkyrienskies:physics_api:1.0.0+ffe4ab4a54")
 
     // Krunch
-    implementation("org.valkyrienskies:krunch:1.0.0+bc49923195")
+    implementation("org.valkyrienskies:krunch:1.0.0+9f4ef41d06")
 
     // JOML for Math
     api("org.joml", "joml", "1.10.0")

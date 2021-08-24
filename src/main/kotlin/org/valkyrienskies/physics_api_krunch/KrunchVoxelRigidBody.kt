@@ -1,6 +1,8 @@
 package org.valkyrienskies.physics_api_krunch
 
+import org.joml.Quaterniondc
 import org.joml.Vector3d
+import org.joml.Vector3dc
 import org.valkyrienskies.krunch.Body
 import org.valkyrienskies.krunch.Pose
 import org.valkyrienskies.physics_api.VoxelRigidBody
@@ -14,13 +16,36 @@ internal class KrunchVoxelRigidBody(
 ) : VoxelRigidBody {
     internal val krunchRigidBody = Body(Pose(rigidBodyTransform.position, rigidBodyTransform.rotation))
 
+    init {
+        krunchRigidBody.isStatic = false
+        krunchRigidBody.dynamicFrictionCoefficient = .5
+        krunchRigidBody.staticFrictionCoefficient = 1.0
+        krunchRigidBody.coefficientOfRestitution = .5
+    }
+
     override var isStatic: Boolean
         get() = krunchRigidBody.isStatic
         set(value) { krunchRigidBody.isStatic = value }
+    override var dynamicFrictionCoefficient: Double
+        get() = krunchRigidBody.dynamicFrictionCoefficient
+        set(value) { krunchRigidBody.dynamicFrictionCoefficient = value }
+    override var staticFrictionCoefficient: Double
+        get() = krunchRigidBody.staticFrictionCoefficient
+        set(value) { krunchRigidBody.staticFrictionCoefficient = value }
+    override var restitutionCoefficient: Double
+        get() = krunchRigidBody.coefficientOfRestitution
+        set(value) { krunchRigidBody.coefficientOfRestitution = value }
 
     override fun addMassAt(x: Int, y: Int, z: Int, addedMass: Double) {
         inertiaData.mass += addedMass
         // TODO: Change moment of inertia tensor
+    }
+
+    override fun setRigidBodyTransform(position: Vector3dc, rotation: Quaterniondc) {
+        krunchRigidBody.pose.p.set(position)
+        krunchRigidBody.pose.q.set(rotation)
+        krunchRigidBody.prevPose.p.set(position)
+        krunchRigidBody.prevPose.q.set(rotation)
     }
 
     companion object {
