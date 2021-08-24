@@ -14,6 +14,10 @@ internal class KrunchVoxelRigidBody(
 ) : VoxelRigidBody {
     internal val krunchRigidBody = Body(Pose(rigidBodyTransform.position, rigidBodyTransform.rotation))
 
+    override var isStatic: Boolean
+        get() = krunchRigidBody.isStatic
+        set(value) { krunchRigidBody.isStatic = value }
+
     override fun addMassAt(x: Int, y: Int, z: Int, addedMass: Double) {
         inertiaData.mass += addedMass
         // TODO: Change moment of inertia tensor
