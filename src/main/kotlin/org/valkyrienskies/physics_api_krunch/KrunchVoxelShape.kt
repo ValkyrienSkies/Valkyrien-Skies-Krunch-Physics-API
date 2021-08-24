@@ -4,7 +4,7 @@ import org.valkyrienskies.krunch.collision.shapes.TSDFVoxelShape
 import org.valkyrienskies.physics_api.VoxelShape
 
 internal class KrunchVoxelShape : VoxelShape {
-    private val krunchShape = TSDFVoxelShape()
+    internal val krunchShape = TSDFVoxelShape()
 
     override fun addVoxel(x: Int, y: Int, z: Int) {
         krunchShape.layeredTSDF.setVoxel(x, y, z, true)

@@ -24,6 +24,7 @@ internal class KrunchVoxelRigidBody(
         krunchRigidBody.dynamicFrictionCoefficient = .5
         krunchRigidBody.staticFrictionCoefficient = 1.0
         krunchRigidBody.coefficientOfRestitution = .5
+        krunchRigidBody.shape = (collisionShape as KrunchVoxelShape).krunchShape
     }
 
     override var isStatic: Boolean
