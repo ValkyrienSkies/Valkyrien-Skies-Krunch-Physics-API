@@ -5,6 +5,7 @@ import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.krunch.Body
 import org.valkyrienskies.krunch.Pose
+import org.valkyrienskies.physics_api.RigidBodyTransform
 import org.valkyrienskies.physics_api.VoxelRigidBody
 import org.valkyrienskies.physics_api.VoxelShape
 
@@ -12,9 +13,11 @@ internal class KrunchVoxelRigidBody(
     override val collisionShape: VoxelShape,
     override val inertiaData: KrunchRigidBodyInertiaData,
     override val rigidBodyId: Int,
-    override val rigidBodyTransform: KrunchRigidBodyTransform
+    rigidBodyTransform: KrunchRigidBodyTransform
 ) : VoxelRigidBody {
     internal val krunchRigidBody = Body(Pose(rigidBodyTransform.position, rigidBodyTransform.rotation))
+    override val rigidBodyTransform: RigidBodyTransform =
+        KrunchRigidBodyTransform(krunchRigidBody.pose.p, krunchRigidBody.pose.q)
 
     init {
         krunchRigidBody.isStatic = false
