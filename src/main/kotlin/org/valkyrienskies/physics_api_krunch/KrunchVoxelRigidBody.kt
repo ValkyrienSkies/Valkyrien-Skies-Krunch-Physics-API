@@ -40,11 +40,6 @@ internal class KrunchVoxelRigidBody(
         get() = krunchRigidBody.coefficientOfRestitution
         set(value) { krunchRigidBody.coefficientOfRestitution = value }
 
-    override fun addMassAt(x: Int, y: Int, z: Int, addedMass: Double) {
-        inertiaData.mass += addedMass
-        // TODO: Change moment of inertia tensor
-    }
-
     override fun setRigidBodyTransform(position: Vector3dc, rotation: Quaterniondc) {
         krunchRigidBody.pose.p.set(position)
         krunchRigidBody.pose.q.set(rotation)
