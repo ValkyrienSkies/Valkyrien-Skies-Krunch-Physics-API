@@ -44,7 +44,7 @@ dependencies {
     api("org.valkyrienskies:physics_api:1.0.0+e6f7e5f1c5")
 
     // Krunch
-    implementation("org.valkyrienskies:krunch:1.0.0+a7f6e3ce56")
+    implementation("org.valkyrienskies:krunch:1.0.0+f2da0a852b")
 
     // JOML for Math
     api("org.joml", "joml", "1.10.0")
