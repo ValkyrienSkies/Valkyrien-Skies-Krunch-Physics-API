@@ -11,7 +11,6 @@ internal class KrunchPhysicsWorld : PhysicsWorld {
     private val rigidBodies: MutableMap<Int, RigidBody<*>> = HashMap()
     private var nextRigidBodyId = 0
     private val krunchPhysicsWorld = org.valkyrienskies.krunch.PhysicsWorld()
-    var subSteps: Int = 40
 
     private val updatesQueue = ConcurrentLinkedQueue<List<VoxelRigidBodyShapeUpdates>>()
 
@@ -57,6 +56,10 @@ internal class KrunchPhysicsWorld : PhysicsWorld {
             }
         }
 
-        krunchPhysicsWorld.simulate(gravity, subSteps, timeStep)
+        krunchPhysicsWorld.simulate(gravity, timeStep)
+    }
+
+    internal fun setSettings(settings: KrunchPhysicsWorldSettings) {
+        krunchPhysicsWorld.settings = settings
     }
 }
