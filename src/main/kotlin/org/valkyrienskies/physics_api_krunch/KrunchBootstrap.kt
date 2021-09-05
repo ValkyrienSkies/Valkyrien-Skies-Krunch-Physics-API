@@ -8,8 +8,8 @@ import org.valkyrienskies.physics_api.PhysicsWorld
 object KrunchBootstrap {
     fun createKrunchPhysicsWorld(): PhysicsWorld = KrunchPhysicsWorld()
 
-    fun setKrunchSettings(physicsWorld: PhysicsWorld, settings: KrunchPhysicsWorldSettings) {
+    fun setKrunchSettings(physicsWorld: PhysicsWorld, settingsWrapper: KrunchPhysicsWorldSettingsWrapper) {
         physicsWorld as KrunchPhysicsWorld
-        physicsWorld.setSettings(settings)
+        physicsWorld.setSettings(settingsWrapper)
     }
 }

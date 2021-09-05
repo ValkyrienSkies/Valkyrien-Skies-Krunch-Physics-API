@@ -59,7 +59,7 @@ internal class KrunchPhysicsWorld : PhysicsWorld {
         krunchPhysicsWorld.simulate(gravity, timeStep)
     }
 
-    internal fun setSettings(settings: KrunchPhysicsWorldSettings) {
-        krunchPhysicsWorld.settings = settings
+    internal fun setSettings(settingsWrapper: KrunchPhysicsWorldSettingsWrapper) {
+        krunchPhysicsWorld.settings = settingsWrapper.krunchSettings
     }
 }
