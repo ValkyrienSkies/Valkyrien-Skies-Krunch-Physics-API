@@ -1,6 +1,7 @@
 package org.valkyrienskies.physics_api_krunch
 
 import org.valkyrienskies.krunch.KrunchPhysicsWorldSettings
+import org.valkyrienskies.krunch.SolverType
 
 /**
  * A wrapper around [KrunchPhysicsWorldSettings]. Used because this package doesn't expose Krunch classes to dependents.
@@ -40,12 +41,12 @@ class KrunchPhysicsWorldSettingsWrapper {
         return krunchSettings.dynamicFrictionCompliance
     }
 
-    fun setRestitutionCorrectionIterations(restitutionCorrectionIterations: Int) {
-        krunchSettings.restitutionCorrectionIterations = restitutionCorrectionIterations
+    fun setIterations(iterations: Int) {
+        krunchSettings.iterations = iterations
     }
 
-    fun getRestitutionCorrectionIterations(): Int {
-        return krunchSettings.restitutionCorrectionIterations
+    fun getIterations(): Int {
+        return krunchSettings.iterations
     }
 
     fun setSpeculativeContactDistance(speculativeContactDistance: Double) {
@@ -54,5 +55,28 @@ class KrunchPhysicsWorldSettingsWrapper {
 
     fun getSpeculativeContactDistance(): Double {
         return krunchSettings.speculativeContactDistance
+    }
+
+    fun getSolverType(): String {
+        return when (krunchSettings.solverType) {
+            SolverType.GAUSS_SEIDEL -> "gauss_seidel"
+            SolverType.JACOBI -> "jacobi"
+        }
+    }
+
+    fun setSolverType(solverType: String) {
+        when (solverType) {
+            "gauss_seidel" -> krunchSettings.solverType = SolverType.GAUSS_SEIDEL
+            "jacobi" -> krunchSettings.solverType = SolverType.JACOBI
+            else -> throw IllegalArgumentException("Unknown solver type $solverType")
+        }
+    }
+
+    fun setMaxCollisionPoints(maxCollisionPoints: Int) {
+        krunchSettings.maxCollisionPoints = maxCollisionPoints
+    }
+
+    fun getMaxCollisionPoints(): Int {
+        return krunchSettings.maxCollisionPoints
     }
 }
