@@ -79,4 +79,12 @@ class KrunchPhysicsWorldSettingsWrapper {
     fun getMaxCollisionPoints(): Int {
         return krunchSettings.maxCollisionPoints
     }
+
+    fun setMaxCollisionPointDepth(maxCollisionPointDepth: Double) {
+        krunchSettings.maxCollisionPointDepth = maxCollisionPointDepth
+    }
+
+    fun getMaxCollisionPointDepth(): Double {
+        return krunchSettings.maxCollisionPointDepth
+    }
 }
