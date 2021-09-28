@@ -9,12 +9,28 @@ import org.valkyrienskies.krunch.SolverType
 class KrunchPhysicsWorldSettingsWrapper {
     internal val krunchSettings = KrunchPhysicsWorldSettings()
 
+    fun setIterations(iterations: Int) {
+        krunchSettings.iterations = iterations
+    }
+
+    fun getIterations(): Int {
+        return krunchSettings.iterations
+    }
+
     fun setSubSteps(subSteps: Int) {
         krunchSettings.subSteps = subSteps
     }
 
     fun getSubSteps(): Int {
         return krunchSettings.subSteps
+    }
+
+    fun setSolverIterationWeight(solverIterationWeight: Double) {
+        krunchSettings.solverIterationWeight = solverIterationWeight
+    }
+
+    fun getSolverIterationWeight(): Double {
+        return krunchSettings.solverIterationWeight
     }
 
     fun setCollisionCompliance(collisionCompliance: Double) {
@@ -41,14 +57,6 @@ class KrunchPhysicsWorldSettingsWrapper {
         return krunchSettings.dynamicFrictionCompliance
     }
 
-    fun setIterations(iterations: Int) {
-        krunchSettings.iterations = iterations
-    }
-
-    fun getIterations(): Int {
-        return krunchSettings.iterations
-    }
-
     fun setSpeculativeContactDistance(speculativeContactDistance: Double) {
         krunchSettings.speculativeContactDistance = speculativeContactDistance
     }
@@ -58,16 +66,13 @@ class KrunchPhysicsWorldSettingsWrapper {
     }
 
     fun getSolverType(): String {
-        return when (krunchSettings.solverType) {
-            SolverType.GAUSS_SEIDEL -> "gauss_seidel"
-            SolverType.JACOBI -> "jacobi"
-        }
+        return krunchSettings.solverType.solverName
     }
 
     fun setSolverType(solverType: String) {
         when (solverType) {
-            "gauss_seidel" -> krunchSettings.solverType = SolverType.GAUSS_SEIDEL
-            "jacobi" -> krunchSettings.solverType = SolverType.JACOBI
+            SolverType.GAUSS_SEIDEL.solverName -> krunchSettings.solverType = SolverType.GAUSS_SEIDEL
+            SolverType.JACOBI.solverName -> krunchSettings.solverType = SolverType.JACOBI
             else -> throw IllegalArgumentException("Unknown solver type $solverType")
         }
     }
