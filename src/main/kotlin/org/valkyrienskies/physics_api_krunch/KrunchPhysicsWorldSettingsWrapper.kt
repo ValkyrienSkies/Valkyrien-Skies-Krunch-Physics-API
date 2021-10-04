@@ -92,4 +92,12 @@ class KrunchPhysicsWorldSettingsWrapper {
     fun getMaxCollisionPointDepth(): Double {
         return krunchSettings.maxCollisionPointDepth
     }
+
+    fun setMaxDePenetrationSpeed(maxDePenetrationSpeed: Double) {
+        krunchSettings.maxDePenetrationSpeed = maxDePenetrationSpeed
+    }
+
+    fun getMaxDePenetrationSpeed(): Double {
+        return krunchSettings.maxDePenetrationSpeed
+    }
 }
