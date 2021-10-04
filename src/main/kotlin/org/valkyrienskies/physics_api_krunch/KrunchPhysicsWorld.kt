@@ -31,6 +31,16 @@ internal class KrunchPhysicsWorld : PhysicsWorld {
     }
 
     override fun tick(gravity: Vector3dc, timeStep: Double) {
+        // Update inertia of rigid bodies
+        for (rigidBody in rigidBodies.values) {
+            rigidBody as KrunchVoxelRigidBody
+            rigidBody.krunchRigidBody.invMass = 1.0 / rigidBody.inertiaData.mass
+            rigidBody.krunchRigidBody.invInertia.set(
+                1.0 / rigidBody.inertiaData.momentOfInertia.x(),
+                1.0 / rigidBody.inertiaData.momentOfInertia.y(),
+                1.0 / rigidBody.inertiaData.momentOfInertia.z()
+            )
+        }
         // For now, just run all the updates on the tick
         // In the future we want to run these in the background.
         while (updatesQueue.isNotEmpty()) {
