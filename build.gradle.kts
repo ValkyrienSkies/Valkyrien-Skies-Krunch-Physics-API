@@ -30,10 +30,6 @@ repositories {
     mavenCentral()
     maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
     maven { setUrl("https://jitpack.io") }
-    maven {
-        name = "Valkyrien Skies Internal"
-        setUrl("https://maven.valkyrienskies.org/repository/internal/")
-    }
 }
 
 dependencies {
