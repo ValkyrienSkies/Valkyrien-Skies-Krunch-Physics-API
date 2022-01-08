@@ -28,7 +28,6 @@ if (project.hasProperty("CustomReleaseVersion")) {
 
 repositories {
     mavenCentral()
-    maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
     maven { setUrl("https://jitpack.io") }
 }
 
@@ -37,10 +36,10 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // VS Physics API
-    api("org.valkyrienskies:physics_api:1.0.0+e6f7e5f1c5")
+    api("com.github.ValkyrienSkies:Valkyrien-Skies-Physics-API:9f7fb6897369886910a4e99d2f393a59f0b00c15")
 
     // Krunch
-    implementation("org.valkyrienskies:krunch:1.0.0+f64f406c73")
+    // implementation("org.valkyrienskies:krunch:1.0.0+f64f406c73")
 
     // JOML for Math
     api("org.joml", "joml", "1.10.0")
