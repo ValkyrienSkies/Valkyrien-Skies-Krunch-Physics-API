@@ -8,10 +8,10 @@ import org.valkyrienskies.physics_api.RigidBodyReference;
 import org.valkyrienskies.physics_api.RigidBodyTransform;
 
 /**
- * This class points to a rigid body in Krunch Native.
+ * This class is a reference to a rigid body in Krunch Native.
  *
- * This class doesn't store a pointer to the rigid body; instead it stores a pointer to the physics world the rigid body
- * exists in; as well as the unique id belonging to the rigid body it points to.
+ * Note this class doesn't store a direct pointer to the rigid body; instead it stores a pointer to the physics world
+ * the rigid body exists in; as well as the unique id belonging to the rigid body it points to.
  */
 class KrunchNativeRigidBodyReference implements RigidBodyReference {
 
