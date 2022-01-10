@@ -9,7 +9,7 @@ import org.valkyrienskies.physics_api.voxel_updates.VoxelRigidBodyShapeUpdates;
 import java.util.List;
 
 /**
- * This class points to physics world in Krunch Native.
+ * This class points to a physics world in Krunch Native.
  */
 class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
 
