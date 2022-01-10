@@ -1,15 +1,16 @@
 package org.valkyrienskies.physics_api_krunch
 
-import org.valkyrienskies.physics_api.PhysicsWorld
+import org.valkyrienskies.physics_api.PhysicsWorldReference
 
 /**
- * Used to create a [KrunchPhysicsWorld] without exposing it to dependencies.
+ * Used to create a [KrunchNativePhysicsWorldReference] without exposing it to dependencies.
  */
 object KrunchBootstrap {
-    fun createKrunchPhysicsWorld(): PhysicsWorld = KrunchPhysicsWorld()
+    fun createKrunchPhysicsWorld(): PhysicsWorldReference =
+        KrunchNativePhysicsWorldReference()
 
-    fun setKrunchSettings(physicsWorld: PhysicsWorld, settingsWrapper: KrunchPhysicsWorldSettingsWrapper) {
-        physicsWorld as KrunchPhysicsWorld
-        physicsWorld.setSettings(settingsWrapper)
+    fun setKrunchSettings(physicsWorldReference: PhysicsWorldReference, settingsWrapper: KrunchPhysicsWorldSettingsc) {
+        physicsWorldReference as KrunchNativePhysicsWorldReference
+        physicsWorldReference.setSettings(settingsWrapper)
     }
 }
