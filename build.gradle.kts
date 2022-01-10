@@ -38,9 +38,6 @@ dependencies {
     // VS Physics API
     api("com.github.ValkyrienSkies:Valkyrien-Skies-Physics-API:e4650ab9a06f2bd057cd05f0b51d8136383c7b30")
 
-    // Krunch
-    // implementation("org.valkyrienskies:krunch:1.0.0+f64f406c73")
-
     // JOML for Math
     api("org.joml", "joml", "1.10.0")
     api("org.joml", "joml-primitives", "1.10.0")
@@ -118,18 +115,6 @@ publishing {
                 credentials {
                     username = ghpUser
                     password = ghpPassword
-                }
-            }
-        }
-
-        // Publish to VS maven
-        if ((System.getenv("VS_MAVEN_USERNAME") != null) and (System.getenv("VS_MAVEN_PASSWORD") != null)) {
-            maven {
-                name = "ValkyrienSkiesMaven"
-                url = uri("https://maven.valkyrienskies.org/repository/internal/")
-                credentials {
-                    username = System.getenv("VS_MAVEN_USERNAME")
-                    password = System.getenv("VS_MAVEN_PASSWORD")
                 }
             }
         }
