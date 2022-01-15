@@ -15,22 +15,20 @@ import org.valkyrienskies.physics_api.RigidBodyTransform;
  */
 class KrunchNativeRigidBodyReference implements RigidBodyReference {
 
+    private static final int DEFAULT_CACHED_RIGID_BODY_INDEX_IN_PHYSICS_WORLD = -1;
+
     private final PhysicsWorldReference physicsWorldReference;
-    private long physicsWorldPointer;
-    private int rigidBodyUniqueId;
+    private final int rigidBodyUniqueId;
 
     // The index of the rigid body in the rigid body vector of the physics world.
     // This index can change because the physics world is allowed to change where rigid bodies are stored.
-    private int rigidBodyIndexInPhysicsWorld;
+    private int cachedRigidBodyIndexInPhysicsWorld;
 
     protected KrunchNativeRigidBodyReference(final PhysicsWorldReference physicsWorldReference,
-                                             final long physicsWorldPointer,
-                                             final int rigidBodyUniqueId,
-                                             final int rigidBodyIndexInPhysicsWorld) {
+                                             final int rigidBodyUniqueId) {
         this.physicsWorldReference = physicsWorldReference;
-        this.physicsWorldPointer = physicsWorldPointer;
         this.rigidBodyUniqueId = rigidBodyUniqueId;
-        this.rigidBodyIndexInPhysicsWorld = rigidBodyIndexInPhysicsWorld;
+        this.cachedRigidBodyIndexInPhysicsWorld = DEFAULT_CACHED_RIGID_BODY_INDEX_IN_PHYSICS_WORLD;
     }
 
     @Override
