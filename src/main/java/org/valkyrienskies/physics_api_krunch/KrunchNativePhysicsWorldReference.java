@@ -3,6 +3,7 @@ package org.valkyrienskies.physics_api_krunch;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3dc;
 import org.valkyrienskies.physics_api.PhysicsWorldReference;
+import org.valkyrienskies.physics_api.UsingDeletedReferenceException;
 import org.valkyrienskies.physics_api.voxel_updates.VoxelRigidBodyShapeUpdates;
 
 import java.util.List;
@@ -25,25 +26,25 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
 
     @NotNull
     @Override
-    public KrunchNativeRigidBodyReference createVoxelRigidBody(int dimension) throws OutOfMemoryError, AlreadyDeletedException {
+    public KrunchNativeRigidBodyReference createVoxelRigidBody(int dimension) throws OutOfMemoryError, UsingDeletedReferenceException {
         ensureResourcesNotDeleted();
         final int rigidBodyUniqueId = createVoxelRigidBody(physicsWorldPointer, dimension);
         return new KrunchNativeRigidBodyReference(this, rigidBodyUniqueId);
     }
 
     @Override
-    public void queueVoxelShapeUpdates(@NotNull List<VoxelRigidBodyShapeUpdates> list) throws AlreadyDeletedException {
+    public void queueVoxelShapeUpdates(@NotNull List<VoxelRigidBodyShapeUpdates> list) throws UsingDeletedReferenceException {
         ensureResourcesNotDeleted();
         queueVoxelShapeUpdates(physicsWorldPointer, list);
     }
 
     @Override
-    public void tick(@NotNull Vector3dc gravity, double timeStep, boolean simulatePhysics) throws AlreadyDeletedException {
+    public void tick(@NotNull Vector3dc gravity, double timeStep, boolean simulatePhysics) throws UsingDeletedReferenceException {
         ensureResourcesNotDeleted();
         tick(physicsWorldPointer, gravity.x(), gravity.y(), gravity.z(), timeStep, simulatePhysics);
     }
 
-    public void setSettings(@NotNull KrunchPhysicsWorldSettingsc settingsWrapper) throws AlreadyDeletedException {
+    public void setSettings(@NotNull KrunchPhysicsWorldSettingsc settingsWrapper) throws UsingDeletedReferenceException {
         ensureResourcesNotDeleted();
         setSettings(physicsWorldPointer, settingsWrapper.getSubSteps(), settingsWrapper.getIterations(),
                     settingsWrapper.getSolverIterationWeight(), settingsWrapper.getCollisionCompliance(),
@@ -63,7 +64,7 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
     }
 
     @Override
-    public boolean deleteRigidBody(int rigidBodyId) throws AlreadyDeletedException {
+    public boolean deleteRigidBody(int rigidBodyId) throws UsingDeletedReferenceException {
         ensureResourcesNotDeleted();
         return deleteRigidBody(physicsWorldPointer, rigidBodyId);
     }
@@ -73,8 +74,8 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
         return hasBeenDeleted;
     }
 
-    private void ensureResourcesNotDeleted() throws AlreadyDeletedException {
-        if (hasBeenDeleted()) throw new AlreadyDeletedException("The underlying physics world has already been deleted!");
+    private void ensureResourcesNotDeleted() throws UsingDeletedReferenceException {
+        if (hasBeenDeleted()) throw new UsingDeletedReferenceException("The underlying physics world has already been deleted!");
     }
 
     // region Native Functions

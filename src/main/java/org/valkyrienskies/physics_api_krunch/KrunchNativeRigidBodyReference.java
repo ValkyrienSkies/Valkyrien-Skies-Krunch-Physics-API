@@ -6,6 +6,7 @@ import org.valkyrienskies.physics_api.PhysicsWorldReference;
 import org.valkyrienskies.physics_api.RigidBodyInertiaData;
 import org.valkyrienskies.physics_api.RigidBodyReference;
 import org.valkyrienskies.physics_api.RigidBodyTransform;
+import org.valkyrienskies.physics_api.UsingDeletedReferenceException;
 
 /**
  * This class is a reference to a rigid body in Krunch Native.
@@ -88,13 +89,7 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     public native void setCollisionShapeScaling(double v);
 
     @Override
-    public native int getDimension();
-
-    @Override
-    public native void setDimension(int i);
-
-    @Override
-    public boolean isReferenceValid() {
+    public boolean hasBeenDeleted() {
         return false;
     }
 
@@ -103,4 +98,7 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     public PhysicsWorldReference getPhysicsWorldReference() {
         return physicsWorldReference;
     }
+
+    @Override
+    public native int getInitialDimension() throws UsingDeletedReferenceException;
 }
