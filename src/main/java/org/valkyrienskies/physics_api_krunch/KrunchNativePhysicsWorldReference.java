@@ -43,7 +43,7 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
         tick(physicsWorldPointer, gravity.x(), gravity.y(), gravity.z(), timeStep, simulatePhysics);
     }
 
-    public void setSettings(@NotNull KrunchPhysicsWorldSettingsc settingsWrapper) {
+    public void setSettings(@NotNull KrunchPhysicsWorldSettingsc settingsWrapper) throws AlreadyDeletedException {
         ensureResourcesNotDeleted();
         setSettings(physicsWorldPointer, settingsWrapper.getSubSteps(), settingsWrapper.getIterations(),
                     settingsWrapper.getSolverIterationWeight(), settingsWrapper.getCollisionCompliance(),
@@ -63,7 +63,7 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
     }
 
     @Override
-    public boolean deleteRigidBody(int rigidBodyId) {
+    public boolean deleteRigidBody(int rigidBodyId) throws AlreadyDeletedException {
         ensureResourcesNotDeleted();
         return deleteRigidBody(physicsWorldPointer, rigidBodyId);
     }
