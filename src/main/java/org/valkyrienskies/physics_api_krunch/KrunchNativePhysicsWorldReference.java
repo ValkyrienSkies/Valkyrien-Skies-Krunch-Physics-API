@@ -78,6 +78,13 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
         if (hasBeenDeleted()) throw new UsingDeletedReferenceException("The underlying physics world has already been deleted!");
     }
 
+    /**
+     * Used by {@link KrunchNativeRigidBodyReference}.
+     */
+    protected long getPhysicsWorldPointer() {
+        return physicsWorldPointer;
+    }
+
     // region Native Functions
     private static native long createKrunchNativePhysicsWorld() throws OutOfMemoryError;
 
