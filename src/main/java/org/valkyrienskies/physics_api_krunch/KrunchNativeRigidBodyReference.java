@@ -210,7 +210,7 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
 
     private static native Vector3dc getCollisionShapeOffset(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
-    private static native double setCollisionShapeOffset(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double offsetX, double offsetY, double offsetZ);
+    private static native void setCollisionShapeOffset(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double offsetX, double offsetY, double offsetZ);
 
     private static native RigidBodyInertiaData getInertiaData(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
