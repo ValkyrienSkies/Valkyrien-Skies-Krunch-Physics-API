@@ -180,6 +180,32 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
         return getInitialDimension(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
     }
 
+    @NotNull
+    @Override
+    public Vector3dc getVelocity() throws UsingDeletedReferenceException {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        return getVelocity(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
+    }
+
+    @Override
+    public void setVelocity(@NotNull Vector3dc velocity) throws UsingDeletedReferenceException {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        setVelocity(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, velocity.x(), velocity.y(), velocity.z());
+    }
+
+    @NotNull
+    @Override
+    public Vector3dc getOmega() throws UsingDeletedReferenceException {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        return getOmega(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
+    }
+
+    @Override
+    public void setOmega(@NotNull Vector3dc omega) throws UsingDeletedReferenceException {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        setOmega(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, omega.x(), omega.y(), omega.z());
+    }
+
     // region Native Functions
     /**
      * @param physicsWorldPointer The pointer to the physics world this rigid body exists in
@@ -225,5 +251,13 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     private static native void setCollisionShapeScaling(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double scaling);
 
     private static native int getInitialDimension(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
+
+    public static native Vector3dc getVelocity(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
+
+    public static native void setVelocity(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double velX, double velY, double velZ);
+
+    public static native Vector3dc getOmega(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
+
+    public static native void setOmega(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double omegaX, double omegaY, double omegaZ);
     // endregion
 }
