@@ -6,8 +6,6 @@ import org.valkyrienskies.physics_api.PhysicsWorldReference;
 import org.valkyrienskies.physics_api.UsingDeletedReferenceException;
 import org.valkyrienskies.physics_api.voxel_updates.VoxelRigidBodyShapeUpdates;
 
-import java.util.List;
-
 /**
  * This class points to a physics world in Krunch Native.
  */
@@ -33,9 +31,9 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
     }
 
     @Override
-    public void queueVoxelShapeUpdates(@NotNull List<VoxelRigidBodyShapeUpdates> list) throws UsingDeletedReferenceException {
+    public void queueVoxelShapeUpdates(@NotNull VoxelRigidBodyShapeUpdates[] array) throws UsingDeletedReferenceException {
         ensureResourcesNotDeleted();
-        queueVoxelShapeUpdates(physicsWorldPointer, list);
+        queueVoxelShapeUpdates(physicsWorldPointer, array);
     }
 
     @Override
@@ -92,7 +90,7 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
 
     private static native int createVoxelRigidBody(long physicsWorldPointer, int dimension) throws OutOfMemoryError;
 
-    private static native void queueVoxelShapeUpdates(long physicsWorldPointer, @NotNull List<VoxelRigidBodyShapeUpdates> list);
+    private static native void queueVoxelShapeUpdates(long physicsWorldPointer, @NotNull VoxelRigidBodyShapeUpdates[] array);
 
     private static native void tick(long physicsWorldPointer, double gravityX, double gravityY, double gravityZ, double timeStep, boolean simulatePhysics);
 

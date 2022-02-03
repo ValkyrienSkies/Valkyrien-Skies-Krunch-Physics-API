@@ -38,7 +38,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // VS Physics API
-    api("com.github.ValkyrienSkies:Valkyrien-Skies-Physics-API:ca4dacebdc69282cb4b07d1e4cf879bf04ab988b")
+    api("com.github.ValkyrienSkies:Valkyrien-Skies-Physics-API:0e1f913dfd553a04fb913636ccba6404e34fc5ad")
 
     // JOML for Math
     api("org.joml", "joml", "1.10.0")
