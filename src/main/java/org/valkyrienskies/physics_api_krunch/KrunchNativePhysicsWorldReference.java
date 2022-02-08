@@ -33,7 +33,8 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
     @Override
     public void queueVoxelShapeUpdates(@NotNull VoxelRigidBodyShapeUpdates[] array) throws UsingDeletedReferenceException {
         ensureResourcesNotDeleted();
-        queueVoxelShapeUpdates(physicsWorldPointer, array);
+        final byte[] encoded = VoxelRigidBodyShapeUpdatesEncoder.encodeVoxelRigidBodyShapeUpdatesArray(array);
+        queueVoxelShapeUpdates(physicsWorldPointer, encoded);
     }
 
     @Override
@@ -90,7 +91,7 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
 
     private static native int createVoxelRigidBody(long physicsWorldPointer, int dimension) throws OutOfMemoryError;
 
-    private static native void queueVoxelShapeUpdates(long physicsWorldPointer, @NotNull VoxelRigidBodyShapeUpdates[] array);
+    private static native void queueVoxelShapeUpdates(long physicsWorldPointer, @NotNull byte[] data);
 
     private static native void tick(long physicsWorldPointer, double gravityX, double gravityY, double gravityZ, double timeStep, boolean simulatePhysics);
 
