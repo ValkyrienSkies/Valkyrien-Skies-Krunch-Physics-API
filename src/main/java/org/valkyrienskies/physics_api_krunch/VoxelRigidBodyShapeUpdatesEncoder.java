@@ -18,7 +18,8 @@ public class VoxelRigidBodyShapeUpdatesEncoder {
         } else {
             // Sparse voxel shape update
             final SparseVoxelShapeUpdate sparseVoxelShapeUpdate = (SparseVoxelShapeUpdate) voxelShapeUpdate;
-            return 16 + 4 + sparseVoxelShapeUpdate.getUpdatesPositions().size() * 2; // 16 bytes min size, 4 bytes for update position size, and 2 bytes per updated position
+            // 16 bytes min size, 4 bytes for update position size, 3 bytes per updated block state (2 bytes for position, 1 byte for blockState)
+            return 16 + 4 + sparseVoxelShapeUpdate.getUpdatesPositions().size() * 3;
         }
     }
 
@@ -84,7 +85,7 @@ public class VoxelRigidBodyShapeUpdatesEncoder {
         return outputBuffer.array();
     }
 
-    public static VoxelRigidBodyShapeUpdates[] decodeVoxelRigidBodyShapeUpdatesArray(@NotNull byte[] encoded) throws NoSuchFieldException, IllegalAccessException {
+    public static VoxelRigidBodyShapeUpdates[] decodeVoxelRigidBodyShapeUpdatesArray(@NotNull byte[] encoded) {
         final ByteBuffer byteBuffer = ByteBuffer.wrap(encoded);
 
         final int arraySize = byteBuffer.getInt();
@@ -135,7 +136,7 @@ public class VoxelRigidBodyShapeUpdatesEncoder {
         return toReturn;
     }
 
-    private static void copyFromByteBufferToByteArray(ByteBuffer src, byte[] dest, int bytesToCopy) throws NoSuchFieldException, IllegalAccessException {
+    private static void copyFromByteBufferToByteArray(ByteBuffer src, byte[] dest, int bytesToCopy) {
         final int oldPosition = src.position();
         final byte[] backingArray = src.array();
         // Copy the bytes
