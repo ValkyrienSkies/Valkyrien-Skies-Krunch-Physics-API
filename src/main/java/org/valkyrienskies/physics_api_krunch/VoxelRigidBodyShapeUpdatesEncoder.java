@@ -8,6 +8,7 @@ import org.valkyrienskies.physics_api.voxel_updates.SparseVoxelShapeUpdate;
 import org.valkyrienskies.physics_api.voxel_updates.VoxelRigidBodyShapeUpdates;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class VoxelRigidBodyShapeUpdatesEncoder {
     private static int getVoxelShapeUpdateSize(@NotNull IVoxelShapeUpdate voxelShapeUpdate) {
@@ -77,6 +78,7 @@ public class VoxelRigidBodyShapeUpdatesEncoder {
         }
 
         final ByteBuffer outputBuffer = ByteBuffer.allocate(size);
+        outputBuffer.order(ByteOrder.LITTLE_ENDIAN);
         outputBuffer.putInt(array.length);
         for (final VoxelRigidBodyShapeUpdates update : array) {
             writeVoxelRigidBodyShapeUpdatesToByteBuf(update, outputBuffer);
@@ -87,6 +89,7 @@ public class VoxelRigidBodyShapeUpdatesEncoder {
 
     public static VoxelRigidBodyShapeUpdates[] decodeVoxelRigidBodyShapeUpdatesArray(@NotNull byte[] encoded) {
         final ByteBuffer byteBuffer = ByteBuffer.wrap(encoded);
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
         final int arraySize = byteBuffer.getInt();
         final VoxelRigidBodyShapeUpdates[] toReturn = new VoxelRigidBodyShapeUpdates[arraySize];
