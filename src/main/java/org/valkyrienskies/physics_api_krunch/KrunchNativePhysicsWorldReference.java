@@ -2,6 +2,7 @@ package org.valkyrienskies.physics_api_krunch;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3dc;
+import org.joml.Vector3ic;
 import org.valkyrienskies.physics_api.PhysicsWorldReference;
 import org.valkyrienskies.physics_api.UsingDeletedReferenceException;
 import org.valkyrienskies.physics_api.voxel_updates.VoxelRigidBodyShapeUpdates;
@@ -24,9 +25,9 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
 
     @NotNull
     @Override
-    public KrunchNativeRigidBodyReference createVoxelRigidBody(int dimension) throws OutOfMemoryError, UsingDeletedReferenceException {
+    public KrunchNativeRigidBodyReference createVoxelRigidBody(int dimension, @NotNull Vector3ic minDefined, @NotNull Vector3ic maxDefined) throws OutOfMemoryError, UsingDeletedReferenceException {
         ensureResourcesNotDeleted();
-        final int rigidBodyUniqueId = createVoxelRigidBody(physicsWorldPointer, dimension);
+        final int rigidBodyUniqueId = createVoxelRigidBody(physicsWorldPointer, dimension, minDefined.x(), minDefined.y(), minDefined.z(), maxDefined.x(), maxDefined.y(), maxDefined.z());
         return new KrunchNativeRigidBodyReference(this, rigidBodyUniqueId);
     }
 
@@ -89,7 +90,7 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
 
     private static native void deleteKrunchNativePhysicsWorld(long physicsWorldPointer);
 
-    private static native int createVoxelRigidBody(long physicsWorldPointer, int dimension) throws OutOfMemoryError;
+    private static native int createVoxelRigidBody(long physicsWorldPointer, int dimension, int minDefinedX, int minDefinedY, int minDefinedZ, int maxDefinedX, int maxDefinedY, int maxDefinedZ) throws OutOfMemoryError;
 
     private static native void queueVoxelShapeUpdates(long physicsWorldPointer, @NotNull byte[] data);
 
