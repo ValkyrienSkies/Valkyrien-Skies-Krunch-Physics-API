@@ -1,5 +1,6 @@
 package org.valkyrienskies.physics_api_krunch
 
+import org.joml.Vector3i
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -14,6 +15,6 @@ class TestNativeSupport {
         assertTrue(!physicsWorldReference.hasBeenDeleted())
         physicsWorldReference.deletePhysicsWorldResources()
         assertTrue(physicsWorldReference.hasBeenDeleted())
-        assertThrows<UsingDeletedReferenceException> { physicsWorldReference.createVoxelRigidBody(0) }
+        assertThrows<UsingDeletedReferenceException> { physicsWorldReference.createVoxelRigidBody(0, Vector3i(Int.MAX_VALUE), Vector3i(Int.MIN_VALUE)) }
     }
 }
