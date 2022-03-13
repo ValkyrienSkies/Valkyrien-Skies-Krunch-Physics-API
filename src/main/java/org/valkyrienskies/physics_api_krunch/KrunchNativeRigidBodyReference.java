@@ -27,6 +27,9 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     // This index can change because the physics world is allowed to change where rigid bodies are stored.
     private int cachedRigidBodyIndex;
 
+    public static final int VOXEL_STATE_RIGID_BODY_NOT_VOXEL = -1;
+    public static final int VOXEL_STATE_UNLOADED = -2;
+
     protected KrunchNativeRigidBodyReference(final KrunchNativePhysicsWorldReference physicsWorldReference,
                                              final int rigidBodyUniqueId) {
         this.physicsWorldReference = physicsWorldReference;
@@ -206,6 +209,16 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
         setOmega(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, omega.x(), omega.y(), omega.z());
     }
 
+    /**
+     * Gets the voxel state of the rigid body at the given block position. This should be used for testing purposes only.
+     *
+     * @return {@link VOXEL_STATE_RIGID_BODY_NOT_VOXEL} if this rigid body is not a voxel rigid body, {@link VOXEL_STATE_UNLOADED} if the voxel is unloaded
+     */
+    protected int getVoxelState(int posX, int posY, int posZ) throws UsingDeletedReferenceException {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        return getVoxelState(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, posX, posY, posZ);
+    }
+
     // region Native Functions
     /**
      * @param physicsWorldPointer The pointer to the physics world this rigid body exists in
@@ -259,5 +272,12 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     public static native Vector3dc getOmega(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
     public static native void setOmega(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double omegaX, double omegaY, double omegaZ);
+
+    /**
+     * This should only be used for testing
+     *
+     * @return {@link VOXEL_STATE_RIGID_BODY_NOT_VOXEL} if this rigid body is not a voxel rigid body, {@link VOXEL_STATE_UNLOADED} if the voxel is unloaded
+     */
+    private static native int getVoxelState(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, int posX, int posY, int posZ);
     // endregion
 }
