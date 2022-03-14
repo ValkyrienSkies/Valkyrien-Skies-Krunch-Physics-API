@@ -113,4 +113,23 @@ class TestEncodingVoxelRigidBodyShapeUpdates {
         assertArrayEquals(overallUpdatesArray, decoded)
     }
 
+    @Test
+    fun testEncodingAndDecodingDeleteOnly() {
+        val overallUpdatesArray: Array<VoxelRigidBodyShapeUpdates?> = arrayOfNulls(1)
+
+        run {
+            val body0Id = 2
+            val body0Updates: Array<IVoxelShapeUpdate?> = arrayOfNulls(1)
+            body0Updates[0] = DeleteVoxelShapeUpdate(5, 6, 7)
+
+            @Suppress("UNCHECKED_CAST")
+            overallUpdatesArray[0] = VoxelRigidBodyShapeUpdates(body0Id, body0Updates as Array<IVoxelShapeUpdate>)
+        }
+
+        val encodedToBytes = VoxelRigidBodyShapeUpdatesEncoder.encodeVoxelRigidBodyShapeUpdatesArray(overallUpdatesArray)
+        val decoded = VoxelRigidBodyShapeUpdatesEncoder.decodeVoxelRigidBodyShapeUpdatesArray(encodedToBytes)
+
+        assertArrayEquals(overallUpdatesArray, decoded)
+    }
+
 }

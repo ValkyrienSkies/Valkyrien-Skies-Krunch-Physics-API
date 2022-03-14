@@ -1,6 +1,7 @@
 package org.valkyrienskies.physics_api_krunch;
 
 import org.jetbrains.annotations.NotNull;
+import org.valkyrienskies.physics_api.voxel_updates.DeleteVoxelShapeUpdate;
 import org.valkyrienskies.physics_api.voxel_updates.DenseVoxelShapeUpdate;
 import org.valkyrienskies.physics_api.voxel_updates.EmptyVoxelShapeUpdate;
 import org.valkyrienskies.physics_api.voxel_updates.IVoxelShapeUpdate;
@@ -16,11 +17,15 @@ public class VoxelRigidBodyShapeUpdatesEncoder {
             return 16; // 16 bytes is the min size
         } else if (voxelShapeUpdate instanceof DenseVoxelShapeUpdate) {
             return 16 + 4096; // 16 bytes for the min size, 4096 bytes for the dense data
-        } else {
+        } else if (voxelShapeUpdate instanceof SparseVoxelShapeUpdate) {
             // Sparse voxel shape update
             final SparseVoxelShapeUpdate sparseVoxelShapeUpdate = (SparseVoxelShapeUpdate) voxelShapeUpdate;
             // 16 bytes min size, 4 bytes for update position size, 3 bytes per updated block state (2 bytes for position, 1 byte for blockState)
             return 16 + 4 + sparseVoxelShapeUpdate.getUpdatesPositions().size() * 3;
+        } else if (voxelShapeUpdate instanceof DeleteVoxelShapeUpdate) {
+            return 16; // 16 bytes is the min size
+        } else {
+            throw new IllegalArgumentException("Unknown update with class type: " + voxelShapeUpdate.getClass());
         }
     }
 
@@ -60,6 +65,10 @@ public class VoxelRigidBodyShapeUpdatesEncoder {
                 outputBuffer.putShort(singleUpdatePos);
                 outputBuffer.put(singleUpdateData);
             }
+        } else if (update instanceof DeleteVoxelShapeUpdate) {
+            int fourthInt = 3;
+            if (update.getRunImmediately()) fourthInt |= 4;
+            outputBuffer.putInt(fourthInt); // 4 bytes
         } else {
             throw new IllegalArgumentException("Unknown update with class type: " + update.getClass());
         }
@@ -128,6 +137,10 @@ public class VoxelRigidBodyShapeUpdatesEncoder {
                             sparseVoxelShapeUpdate.addUpdate(posX, posY, posZ, voxelData);
                         }
                         updatesArray[j] = sparseVoxelShapeUpdate;
+                        break;
+                    case 3: // DeleteVoxelShapeUpdate
+                        final DeleteVoxelShapeUpdate deleteVoxelShapeUpdate = new DeleteVoxelShapeUpdate(regionX, regionY, regionZ, updateImmediately);
+                        updatesArray[j] = deleteVoxelShapeUpdate;
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown update encoded type: " + updateType);
