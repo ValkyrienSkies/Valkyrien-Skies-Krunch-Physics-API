@@ -107,26 +107,32 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     @Override
     public RigidBodyInertiaData getInertiaData() throws UsingDeletedReferenceException {
         updateCachedIndexAndEnsureReferenceNotDeleted();
-        return getInertiaData(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
+        final byte[] encoded = new byte[RigidBodyInertiaDataEncoder.RIGID_BODY_INERTIA_DATA_BYTES_SIZE];
+        getInertiaData(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, encoded);
+        return RigidBodyInertiaDataEncoder.decodeRigidBodyInertiaData(encoded);
     }
 
     @Override
     public void setInertiaData(@NotNull RigidBodyInertiaData rigidBodyInertiaData) throws UsingDeletedReferenceException {
         updateCachedIndexAndEnsureReferenceNotDeleted();
-        setInertiaData(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, rigidBodyInertiaData.getMass(), rigidBodyInertiaData.getMomentOfInertia().x(), rigidBodyInertiaData.getMomentOfInertia().y(), rigidBodyInertiaData.getMomentOfInertia().z());
+        final byte[] encoded = RigidBodyInertiaDataEncoder.encodeRigidBodyInertiaData(rigidBodyInertiaData);
+        setInertiaData(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, encoded);
     }
 
     @NotNull
     @Override
     public RigidBodyTransform getRigidBodyTransform() throws UsingDeletedReferenceException {
         updateCachedIndexAndEnsureReferenceNotDeleted();
-        return getRigidBodyTransform(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
+        final byte[] encoded = new byte[RigidBodyTransformEncoder.RIGID_BODY_TRANSFORM_BYTES_SIZE];
+        getRigidBodyTransform(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, encoded);
+        return RigidBodyTransformEncoder.decodeRigidBodyTransform(encoded);
     }
 
     @Override
     public void setRigidBodyTransform(@NotNull RigidBodyTransform rigidBodyTransform) throws UsingDeletedReferenceException {
         updateCachedIndexAndEnsureReferenceNotDeleted();
-        setRigidBodyTransform(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, rigidBodyTransform);
+        final byte[] encoded = RigidBodyTransformEncoder.encodeRigidBodyTransform(rigidBodyTransform);
+        setRigidBodyTransform(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, encoded);
     }
 
     @Override
@@ -212,7 +218,7 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     /**
      * Gets the voxel state of the rigid body at the given block position. This should be used for testing purposes only.
      *
-     * @return {@link VOXEL_STATE_RIGID_BODY_NOT_VOXEL} if this rigid body is not a voxel rigid body, {@link VOXEL_STATE_UNLOADED} if the voxel is unloaded
+     * @return VOXEL_STATE_RIGID_BODY_NOT_VOXEL if this rigid body is not a voxel rigid body, VOXEL_STATE_UNLOADED if the voxel is unloaded
      */
     protected int getVoxelState(int posX, int posY, int posZ) throws UsingDeletedReferenceException {
         updateCachedIndexAndEnsureReferenceNotDeleted();
@@ -251,13 +257,13 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
 
     private static native void setCollisionShapeOffset(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double offsetX, double offsetY, double offsetZ);
 
-    private static native RigidBodyInertiaData getInertiaData(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
+    private static native void getInertiaData(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull byte[] output);
 
-    private static native void setInertiaData(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double mass, double inertiaX, double inertiaY, double inertiaZ);
+    private static native void setInertiaData(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull byte[] data);
 
-    private static native RigidBodyTransform getRigidBodyTransform(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
+    private static native void getRigidBodyTransform(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull byte[] output);
 
-    private static native void setRigidBodyTransform(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull RigidBodyTransform rigidBodyTransform);
+    private static native void setRigidBodyTransform(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull byte[] data);
 
     private static native double getCollisionShapeScaling(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
@@ -276,7 +282,7 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     /**
      * This should only be used for testing
      *
-     * @return {@link VOXEL_STATE_RIGID_BODY_NOT_VOXEL} if this rigid body is not a voxel rigid body, {@link VOXEL_STATE_UNLOADED} if the voxel is unloaded
+     * @return VOXEL_STATE_RIGID_BODY_NOT_VOXEL if this rigid body is not a voxel rigid body, VOXEL_STATE_UNLOADED if the voxel is unloaded
      */
     private static native int getVoxelState(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, int posX, int posY, int posZ);
     // endregion
