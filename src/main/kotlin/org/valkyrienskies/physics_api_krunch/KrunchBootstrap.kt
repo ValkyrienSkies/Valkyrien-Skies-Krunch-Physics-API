@@ -17,6 +17,6 @@ object KrunchBootstrap {
 
     fun loadNativeBinaries() {
         val nativeLoader = SharedLibraryLoader()
-        nativeLoader.load("libKrunchJni")
+        nativeLoader.load("KrunchJni")
     }
 }
