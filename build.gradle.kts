@@ -5,6 +5,8 @@ plugins {
     maven
     checkstyle
     `maven-publish`
+    application // Add a main class for testing loading binaries within the jar
+    id("com.github.johnrengelman.shadow") version "4.0.4" // Shade libgdx in the jar
 }
 
 group = "org.valkyrienskies.physics_api_krunch"
@@ -28,12 +30,7 @@ if (project.hasProperty("CustomReleaseVersion")) {
 
 repositories {
     mavenCentral()
-    maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
     maven { setUrl("https://jitpack.io") }
-    maven {
-        name = "Valkyrien Skies Internal"
-        setUrl("https://maven.valkyrienskies.org/repository/internal/")
-    }
 }
 
 dependencies {
@@ -41,10 +38,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // VS Physics API
-    api("org.valkyrienskies:physics_api:1.0.0+e6f7e5f1c5")
-
-    // Krunch
-    implementation("org.valkyrienskies:krunch:1.0.0+f64f406c73")
+    api("com.github.ValkyrienSkies:Valkyrien-Skies-Physics-API:c84f1419e606de702e43d5417dd1c925bf0eefd8")
 
     // JOML for Math
     api("org.joml", "joml", "1.10.0")
@@ -56,9 +50,19 @@ dependencies {
     // FastUtil for Fast Primitive Collections
     implementation("it.unimi.dsi", "fastutil", "8.2.1")
 
+    // Libgdx for SharedLibraryLoader
+    implementation("com.badlogicgames.gdx:gdx:1.9.10")
+
     // Junit 5 for Unit Testing
     testImplementation("org.junit.jupiter", "junit-jupiter", "5.4.2")
 }
+
+// Set the main class name
+val mainClassLocation = "org.valkyrienskies.physics_api_krunch.MainKt"
+application {
+    mainClass.set(mainClassLocation)
+}
+project.setProperty("mainClassName", mainClassLocation)
 
 tasks.withType<Checkstyle> {
     reports {
@@ -103,6 +107,20 @@ tasks {
             events("passed", "skipped", "failed")
         }
     }
+    // Add shadowJar task
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        archiveBaseName.set("shadow")
+        mergeServiceFiles()
+        manifest {
+            attributes(mapOf("Main-Class" to mainClassLocation))
+        }
+    }
+}
+
+tasks {
+    build {
+        dependsOn(shadowJar)
+    }
 }
 
 // Publish javadoc and sources to maven
@@ -123,18 +141,6 @@ publishing {
                 credentials {
                     username = ghpUser
                     password = ghpPassword
-                }
-            }
-        }
-
-        // Publish to VS maven
-        if ((System.getenv("VS_MAVEN_USERNAME") != null) and (System.getenv("VS_MAVEN_PASSWORD") != null)) {
-            maven {
-                name = "ValkyrienSkiesMaven"
-                url = uri("https://maven.valkyrienskies.org/repository/internal/")
-                credentials {
-                    username = System.getenv("VS_MAVEN_USERNAME")
-                    password = System.getenv("VS_MAVEN_PASSWORD")
                 }
             }
         }
