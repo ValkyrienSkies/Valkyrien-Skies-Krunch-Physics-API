@@ -1,9 +1,7 @@
 plugins {
     kotlin("jvm") version "1.5.0"
-    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
     java
     maven
-    checkstyle
     `maven-publish`
     application // Add a main class for testing loading binaries within the jar
     id("com.github.johnrengelman.shadow") version "4.0.4" // Shade libgdx in the jar
@@ -63,28 +61,6 @@ application {
     mainClass.set(mainClassLocation)
 }
 project.setProperty("mainClassName", mainClassLocation)
-
-tasks.withType<Checkstyle> {
-    reports {
-        // Do not output html reports
-        html.isEnabled = false
-        // Output xml reports
-        xml.isEnabled = true
-    }
-}
-
-checkstyle {
-    toolVersion = "8.41"
-    configFile = file("$rootDir/.checkstyle/checkstyle.xml")
-    isIgnoreFailures = false
-}
-
-ktlint {
-    disabledRules.set(setOf("parameter-list-wrapping"))
-    reporters {
-        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
-    }
-}
 
 tasks {
     compileKotlin {

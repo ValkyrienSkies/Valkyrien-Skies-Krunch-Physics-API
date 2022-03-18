@@ -47,11 +47,11 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
     public void setSettings(@NotNull KrunchPhysicsWorldSettingsc settingsWrapper) throws UsingDeletedReferenceException {
         ensureResourcesNotDeleted();
         setSettings(physicsWorldPointer, settingsWrapper.getSubSteps(), settingsWrapper.getIterations(),
-                    settingsWrapper.getSolverIterationWeight(), settingsWrapper.getCollisionCompliance(),
-                    settingsWrapper.getCollisionRestitutionCompliance(), settingsWrapper.getDynamicFrictionCompliance(),
-                    settingsWrapper.getSpeculativeContactDistance(), settingsWrapper.getSolverType().getSolverName(),
-                    settingsWrapper.getMaxCollisionPoints(), settingsWrapper.getMaxCollisionPointDepth(),
-                    settingsWrapper.getMaxDePenetrationSpeed());
+            settingsWrapper.getSolverIterationWeight(), settingsWrapper.getCollisionCompliance(),
+            settingsWrapper.getCollisionRestitutionCompliance(), settingsWrapper.getDynamicFrictionCompliance(),
+            settingsWrapper.getSpeculativeContactDistance(), settingsWrapper.getSolverType().getSolverName(),
+            settingsWrapper.getMaxCollisionPoints(), settingsWrapper.getMaxCollisionPointDepth(),
+            settingsWrapper.getMaxDePenetrationSpeed());
     }
 
     @Override
@@ -75,7 +75,8 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
     }
 
     private void ensureResourcesNotDeleted() throws UsingDeletedReferenceException {
-        if (hasBeenDeleted()) throw new UsingDeletedReferenceException("The underlying physics world has already been deleted!");
+        if (hasBeenDeleted())
+            throw new UsingDeletedReferenceException("The underlying physics world has already been deleted!");
     }
 
     /**
