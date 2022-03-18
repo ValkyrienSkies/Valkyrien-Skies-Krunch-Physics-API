@@ -43,9 +43,17 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test --info
 
-      - name: Cleanup Gradle Cache
+      - name: Cleanup Gradle Cache Non-Windows
         # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
         # Restoring these files from a GitHub Actions cache might cause problems for future builds.
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
+        if: matrix.os != 'windows-latest'
+      - name: Cleanup Gradle Cache Windows
+        # Use powershell for windows
+        shell: powershell
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
+        if: matrix.os == 'windows-latest'
