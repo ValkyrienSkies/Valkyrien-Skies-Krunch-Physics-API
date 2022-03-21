@@ -271,13 +271,13 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
 
     private static native int getInitialDimension(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
-    public static native Vector3dc getVelocity(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
+    private static native Vector3dc getVelocity(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
-    public static native void setVelocity(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double velX, double velY, double velZ);
+    private static native void setVelocity(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double velX, double velY, double velZ);
 
-    public static native Vector3dc getOmega(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
+    private static native Vector3dc getOmega(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
-    public static native void setOmega(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double omegaX, double omegaY, double omegaZ);
+    private static native void setOmega(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double omegaX, double omegaY, double omegaZ);
 
     /**
      * This should only be used for testing
