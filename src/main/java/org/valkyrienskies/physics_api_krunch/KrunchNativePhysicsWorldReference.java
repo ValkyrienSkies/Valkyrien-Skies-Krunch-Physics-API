@@ -18,7 +18,7 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
     private long physicsWorldPointer;
     private boolean hasBeenDeleted;
 
-    public KrunchNativePhysicsWorldReference() throws OutOfMemoryError {
+    protected KrunchNativePhysicsWorldReference() throws OutOfMemoryError {
         this.physicsWorldPointer = createKrunchNativePhysicsWorld();
         this.hasBeenDeleted = false;
     }
