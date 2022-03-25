@@ -2,11 +2,16 @@ package org.valkyrienskies.physics_api_krunch;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3dc;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.valkyrienskies.physics_api.PhysicsWorldReference;
 import org.valkyrienskies.physics_api.RigidBodyInertiaData;
 import org.valkyrienskies.physics_api.RigidBodyReference;
 import org.valkyrienskies.physics_api.RigidBodyTransform;
 import org.valkyrienskies.physics_api.UsingDeletedReferenceException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is a reference to a rigid body in Krunch Native.
@@ -225,6 +230,18 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
         return getVoxelState(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, posX, posY, posZ);
     }
 
+    protected List<Vector3ic> getSetVoxels() throws UsingDeletedReferenceException {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        final int voxelsSize = getSetVoxelsSize(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
+        final int[] setVoxels = new int[voxelsSize * 3];
+        getSetVoxels(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, setVoxels);
+        final List<Vector3ic> toReturn = new ArrayList<>(voxelsSize);
+        for (int i = 0; i < voxelsSize; i++) {
+            toReturn.add(new Vector3i(setVoxels[i], setVoxels[i + 1], setVoxels[i + 2]));
+        }
+        return toReturn;
+    }
+
     // region Native Functions
     /**
      * @param physicsWorldPointer The pointer to the physics world this rigid body exists in
@@ -285,5 +302,15 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
      * @return VOXEL_STATE_RIGID_BODY_NOT_VOXEL if this rigid body is not a voxel rigid body, VOXEL_STATE_UNLOADED if the voxel is unloaded
      */
     private static native int getVoxelState(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, int posX, int posY, int posZ);
+
+    /**
+     * This should only be used for testing
+     */
+    private static native int getSetVoxelsSize(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
+
+    /**
+     * This should only be used for testing
+     */
+    private static native void getSetVoxels(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull int[] data);
     // endregion
 }

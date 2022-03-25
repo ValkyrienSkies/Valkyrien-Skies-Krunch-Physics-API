@@ -6,7 +6,12 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.valkyrienskies.physics_api.PhysicsWorldReference
-import org.valkyrienskies.physics_api.voxel_updates.*
+import org.valkyrienskies.physics_api.voxel_updates.DeleteVoxelShapeUpdate
+import org.valkyrienskies.physics_api.voxel_updates.DenseVoxelShapeUpdate
+import org.valkyrienskies.physics_api.voxel_updates.EmptyVoxelShapeUpdate
+import org.valkyrienskies.physics_api.voxel_updates.KrunchVoxelStates
+import org.valkyrienskies.physics_api.voxel_updates.SparseVoxelShapeUpdate
+import org.valkyrienskies.physics_api.voxel_updates.VoxelRigidBodyShapeUpdates
 import org.valkyrienskies.physics_api_krunch.KrunchNativeRigidBodyReference.VOXEL_STATE_UNLOADED
 
 class TestVoxelRigidBody {
@@ -213,6 +218,50 @@ class TestVoxelRigidBody {
             // Verify the dense update was processed correctly
             val voxelState5 = voxelBodyReference.getVoxelState(9, 10, 11).toByte()
             assertEquals(KrunchVoxelStates.AIR_STATE, voxelState5)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testSparseGetVoxelState2() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+
+            // We expect [VOXEL_STATE_UNLOADED] because we haven't sent any voxel shape updates and the shape is defined between (0, 0, 0) and (15, 15, 15)
+            val voxelState = voxelBodyReference.getVoxelState(1, 0, 0)
+            assertEquals(VOXEL_STATE_UNLOADED, voxelState)
+
+            val sparseUpdate1 = SparseVoxelShapeUpdate(0, 0, 0, runImmediately = true)
+            sparseUpdate1.addUpdate(0, 0, 0, KrunchVoxelStates.SOLID_STATE)
+            sparseUpdate1.addUpdate(1, 0, 0, KrunchVoxelStates.SOLID_STATE)
+            sendSparseUpdate(physicsWorldReference, voxelBodyReference.rigidBodyId, sparseUpdate1)
+
+            // Verify the dense update was processed correctly
+            val voxelState2 = voxelBodyReference.getVoxelState(1, 0, 0).toByte()
+            assertEquals(KrunchVoxelStates.SOLID_STATE, voxelState2)
+
+            // Send the dense update to "load" the terrain the chunk at (0, 0, 0)
+            val sparseUpdate2 = SparseVoxelShapeUpdate(0, 0, 0, runImmediately = true)
+            sparseUpdate2.addUpdate(1, 0, 0, KrunchVoxelStates.AIR_STATE)
+            sendSparseUpdate(physicsWorldReference, voxelBodyReference.rigidBodyId, sparseUpdate2)
+
+            // Verify the dense update was processed correctly
+            val voxelState3 = voxelBodyReference.getVoxelState(1, 0, 0).toByte()
+            assertEquals(KrunchVoxelStates.AIR_STATE, voxelState3)
+
+            val sparseUpdate3 = SparseVoxelShapeUpdate(0, 0, 0, runImmediately = true)
+            sparseUpdate3.addUpdate(1, 0, 0, KrunchVoxelStates.SOLID_STATE)
+            sendSparseUpdate(physicsWorldReference, voxelBodyReference.rigidBodyId, sparseUpdate3)
+
+            // Verify the dense update was processed correctly
+            val voxelState4 = voxelBodyReference.getVoxelState(1, 0, 0).toByte()
+            assertEquals(KrunchVoxelStates.SOLID_STATE, voxelState4)
+
+            val voxelState5 = voxelBodyReference.getVoxelState(0, 0, 0).toByte()
+            assertEquals(KrunchVoxelStates.SOLID_STATE, voxelState5)
         } finally {
             physicsWorldReference.deletePhysicsWorldResources()
         }
