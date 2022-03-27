@@ -230,14 +230,14 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
         return getVoxelState(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, posX, posY, posZ);
     }
 
-    protected List<Vector3ic> getSetVoxels() throws UsingDeletedReferenceException {
+    protected List<Vector3ic> getSolidSetVoxels() throws UsingDeletedReferenceException {
         updateCachedIndexAndEnsureReferenceNotDeleted();
-        final int voxelsSize = getSetVoxelsSize(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
+        final int voxelsSize = getSolidSetVoxelsSize(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
         final int[] setVoxels = new int[voxelsSize * 3];
-        getSetVoxels(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, setVoxels);
+        getSolidSetVoxels(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, setVoxels);
         final List<Vector3ic> toReturn = new ArrayList<>(voxelsSize);
         for (int i = 0; i < voxelsSize; i++) {
-            toReturn.add(new Vector3i(setVoxels[i], setVoxels[i + 1], setVoxels[i + 2]));
+            toReturn.add(new Vector3i(setVoxels[i * 3], setVoxels[(i * 3) + 1], setVoxels[(i * 3) + 2]));
         }
         return toReturn;
     }
@@ -306,11 +306,11 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     /**
      * This should only be used for testing
      */
-    private static native int getSetVoxelsSize(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
+    private static native int getSolidSetVoxelsSize(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
     /**
      * This should only be used for testing
      */
-    private static native void getSetVoxels(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull int[] data);
+    private static native void getSolidSetVoxels(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull int[] data);
     // endregion
 }

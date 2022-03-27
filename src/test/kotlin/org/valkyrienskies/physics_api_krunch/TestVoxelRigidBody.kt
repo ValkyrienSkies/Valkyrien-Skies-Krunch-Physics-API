@@ -2,6 +2,7 @@ package org.valkyrienskies.physics_api_krunch
 
 import org.joml.Vector3d
 import org.joml.Vector3i
+import org.joml.Vector3ic
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -262,6 +263,49 @@ class TestVoxelRigidBody {
 
             val voxelState5 = voxelBodyReference.getVoxelState(0, 0, 0).toByte()
             assertEquals(KrunchVoxelStates.SOLID_STATE, voxelState5)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testGetSolidSetVoxels() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+
+            // We expect the empty list because we haven't sent any voxel shape updates
+            val setVoxels = voxelBodyReference.solidSetVoxels
+            assertEquals(listOf<Vector3ic>(), setVoxels)
+
+            // Set blocks (0,0,0) and (1,0,0) to solid
+            val sparseUpdate1 = SparseVoxelShapeUpdate(0, 0, 0, runImmediately = true)
+            sparseUpdate1.addUpdate(0, 0, 0, KrunchVoxelStates.SOLID_STATE)
+            sparseUpdate1.addUpdate(1, 0, 0, KrunchVoxelStates.SOLID_STATE)
+            sendSparseUpdate(physicsWorldReference, voxelBodyReference.rigidBodyId, sparseUpdate1)
+
+            // Verify the dense update was processed correctly
+            val setVoxels2 = voxelBodyReference.solidSetVoxels
+            assertEquals(listOf(Vector3i(0, 0, 0), Vector3i(1, 0, 0)), setVoxels2)
+
+            // Set block (1,0,0) to air
+            val sparseUpdate2 = SparseVoxelShapeUpdate(0, 0, 0, runImmediately = true)
+            sparseUpdate2.addUpdate(1, 0, 0, KrunchVoxelStates.AIR_STATE)
+            sendSparseUpdate(physicsWorldReference, voxelBodyReference.rigidBodyId, sparseUpdate2)
+
+            // Verify the update was processed correctly
+            val setVoxels3 = voxelBodyReference.solidSetVoxels
+            assertEquals(listOf(Vector3i(0, 0, 0)), setVoxels3)
+
+            // Set block (1,0,0) to solid
+            val sparseUpdate3 = SparseVoxelShapeUpdate(0, 0, 0, runImmediately = true)
+            sparseUpdate3.addUpdate(1, 0, 0, KrunchVoxelStates.SOLID_STATE)
+            sendSparseUpdate(physicsWorldReference, voxelBodyReference.rigidBodyId, sparseUpdate3)
+
+            // Verify the update was processed correctly
+            val setVoxels4 = voxelBodyReference.solidSetVoxels
+            assertEquals(listOf(Vector3i(0, 0, 0), Vector3i(1, 0, 0)), setVoxels4)
         } finally {
             physicsWorldReference.deletePhysicsWorldResources()
         }
