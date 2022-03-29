@@ -311,6 +311,45 @@ class TestVoxelRigidBody {
         }
     }
 
+    @Test
+    fun testGetSolidSetVoxels2() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+
+            val setVoxelsGroundTruth = HashSet<Vector3ic>()
+
+            for (x in -10..10) {
+                for (z in -10..10) {
+                    for (y in -1..1) {
+                        val sparseUpdate = SparseVoxelShapeUpdate(x shr 4, y shr 4, z shr 4, runImmediately = true)
+                        sparseUpdate.addUpdate(x and 15, y and 15, z and 15, KrunchVoxelStates.SOLID_STATE)
+                        sendSparseUpdate(physicsWorldReference, voxelBodyReference.rigidBodyId, sparseUpdate)
+                        setVoxelsGroundTruth.add(Vector3i(x, y, z))
+                    }
+                }
+            }
+
+            for (x in -3..3) {
+                for (z in -3..3) {
+                    for (y in -1..1) {
+                        val sparseUpdate = SparseVoxelShapeUpdate(x shr 4, y shr 4, z shr 4, runImmediately = true)
+                        sparseUpdate.addUpdate(x and 15, y and 15, z and 15, KrunchVoxelStates.AIR_STATE)
+                        sendSparseUpdate(physicsWorldReference, voxelBodyReference.rigidBodyId, sparseUpdate)
+                        setVoxelsGroundTruth.remove(Vector3i(x, y, z))
+                    }
+                }
+            }
+
+            val voxelsFromKrunch = HashSet<Vector3ic>(voxelBodyReference.solidSetVoxels)
+
+            assertEquals(setVoxelsGroundTruth, voxelsFromKrunch)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
     /* TODO: Re-enable this test
     @Test
     fun testSparseThenEmptyOverwriteGetVoxelState() {
