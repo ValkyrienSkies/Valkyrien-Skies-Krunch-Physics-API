@@ -1,7 +1,7 @@
 package org.valkyrienskies.physics_api_krunch
 
-import com.badlogic.gdx.utils.SharedLibraryLoader
 import org.valkyrienskies.physics_api.PhysicsWorldReference
+import org.valkyrienskies.physics_api_krunch.shared_library_loader.KrunchPhysicsAPISharedLibraryLoader
 
 /**
  * Used to create a [KrunchNativePhysicsWorldReference] without exposing it to dependencies.
@@ -16,7 +16,7 @@ object KrunchBootstrap {
     }
 
     fun loadNativeBinaries() {
-        val nativeLoader = SharedLibraryLoader()
+        val nativeLoader = KrunchPhysicsAPISharedLibraryLoader()
         nativeLoader.load("KrunchJni")
     }
 }

@@ -48,9 +48,6 @@ dependencies {
     // FastUtil for Fast Primitive Collections
     implementation("it.unimi.dsi", "fastutil", "8.2.1")
 
-    // Libgdx for SharedLibraryLoader
-    implementation("com.badlogicgames.gdx:gdx:1.9.10")
-
     // Junit 5 for Unit Testing
     testImplementation("org.junit.jupiter", "junit-jupiter", "5.4.2")
 }
