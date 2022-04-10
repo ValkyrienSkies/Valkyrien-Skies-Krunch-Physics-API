@@ -4,7 +4,6 @@ plugins {
     maven
     `maven-publish`
     application // Add a main class for testing loading binaries within the jar
-    id("com.github.johnrengelman.shadow") version "4.0.4" // Shade libgdx in the jar
 }
 
 group = "org.valkyrienskies.physics_api_krunch"
@@ -42,9 +41,6 @@ dependencies {
     api("org.joml", "joml", "1.10.0")
     api("org.joml", "joml-primitives", "1.10.0")
 
-    // Guava
-    implementation("com.google.guava", "guava", "29.0-jre")
-
     // FastUtil for Fast Primitive Collections
     implementation("it.unimi.dsi", "fastutil", "8.2.1")
 
@@ -79,20 +75,6 @@ tasks {
         testLogging {
             events("passed", "skipped", "failed")
         }
-    }
-    // Add shadowJar task
-    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
-        archiveBaseName.set("shadow")
-        mergeServiceFiles()
-        manifest {
-            attributes(mapOf("Main-Class" to mainClassLocation))
-        }
-    }
-}
-
-tasks {
-    build {
-        dependsOn(shadowJar)
     }
 }
 
