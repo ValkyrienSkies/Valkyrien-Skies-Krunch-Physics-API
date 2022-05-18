@@ -1,6 +1,10 @@
 package org.valkyrienskies.physics_api_krunch;
 
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaterniond;
+import org.joml.Quaterniondc;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.physics_api.RigidBodyTransform;
 
 import java.nio.ByteBuffer;
@@ -44,7 +48,10 @@ public class RigidBodyTransformEncoder {
         final double rotZ = byteBuffer.getDouble();
         final double rotW = byteBuffer.getDouble();
 
-        return RigidBodyTransform.Companion.createRigidBodyTransform(posX, posY, posZ, rotX, rotY, rotZ, rotW);
+        final Vector3dc pos = new Vector3d(posX, posY, posZ);
+        final Quaterniondc rot = new Quaterniond(rotX, rotY, rotZ, rotW);
+
+        return new RigidBodyTransform(pos, rot);
     }
 
 }

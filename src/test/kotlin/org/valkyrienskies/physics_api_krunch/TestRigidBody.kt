@@ -1,6 +1,7 @@
 package org.valkyrienskies.physics_api_krunch
 
 import org.joml.AxisAngle4d
+import org.joml.Matrix3d
 import org.joml.Quaterniond
 import org.joml.Vector3d
 import org.joml.Vector3i
@@ -97,7 +98,11 @@ class TestRigidBody {
         try {
             val voxelBodyReference =
                 physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
-            val inertiaData = RigidBodyInertiaData(10.0, Vector3d(1.0, 2.0, 3.0))
+            val invMOI = Matrix3d()
+            invMOI.m00 = 1.0
+            invMOI.m11 = 5e-1
+            invMOI.m22 = 3e-1
+            val inertiaData = RigidBodyInertiaData(1e-1, invMOI)
             voxelBodyReference.inertiaData = inertiaData
             assertEquals(inertiaData, voxelBodyReference.inertiaData)
         } finally {
