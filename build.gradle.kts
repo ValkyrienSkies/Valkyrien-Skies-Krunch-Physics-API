@@ -27,7 +27,10 @@ if (project.hasProperty("CustomReleaseVersion")) {
 
 repositories {
     mavenCentral()
-    maven { setUrl("https://jitpack.io") }
+    maven {
+        name = "VS Maven"
+        url = uri("https://maven.valkyrienskies.org/")
+    }
 }
 
 dependencies {
@@ -35,7 +38,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // VS Physics API
-    api("com.github.ValkyrienSkies:Valkyrien-Skies-Physics-API:e38bce7bd27ffd434122312bb49120cda5ef79ce")
+    api("org.valkyrienskies:physics_api:1.0.0+e38bce7bd2")
 
     // JOML for Math
     api("org.joml", "joml", "1.10.0")
