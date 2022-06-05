@@ -17,6 +17,9 @@ object KrunchBootstrap {
 
     fun loadNativeBinaries() {
         val nativeLoader = KrunchPhysicsAPISharedLibraryLoader()
-        nativeLoader.load("KrunchJni")
+        // TODO: Set this automatically, but for now just always use the no-avx binary
+        val suffix = "_no_avx"
+        val libraryName = "KrunchJni$suffix"
+        nativeLoader.load(libraryName)
     }
 }
