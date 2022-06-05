@@ -17,7 +17,8 @@ object KrunchBootstrap {
 
     fun loadNativeBinaries() {
         val nativeLoader = KrunchPhysicsAPISharedLibraryLoader()
-        // TODO: Set this automatically, but for now just always use the no-avx binary
+        // TODO: Basically only want to use the other version for the newest Ryzen and Intel cpus. Theres more flags to
+        //       look for than just Ryzen. The _no_avx binaries are about 15% slower in my testing.
         val suffix = "_no_avx"
         val libraryName = "KrunchJni$suffix"
         nativeLoader.load(libraryName)
