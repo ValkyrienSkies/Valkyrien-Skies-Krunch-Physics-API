@@ -5,6 +5,7 @@ import org.joml.Quaterniond
 import org.joml.Vector3d
 import org.joml.Vector3i
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -72,6 +73,69 @@ class TestPhysicsWorld {
             run {
                 val topBodyTransform = topBody.rigidBodyTransform
                 assertEquals(-0.5, topBodyTransform.position.y(), 1e-3)
+            }
+        } catch (e: Exception) {
+            assertNotNull(e)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testBodiesDontMoveWhenCollidingWithUnloadedTerrain() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+
+        try {
+            // groundBody is completely undefined
+            val groundBody = physicsWorldReference.createVoxelRigidBody(
+                0,
+                Vector3i(Int.MIN_VALUE, 0, Int.MIN_VALUE),
+                Vector3i(Int.MAX_VALUE, 255, Int.MAX_VALUE)
+            )
+            groundBody.isStatic = true
+
+            val sparseUpdate = SparseVoxelShapeUpdate(0, 0, 0, runImmediately = true)
+            sparseUpdate.addUpdate(0, 0, 0, KrunchVoxelStates.SOLID_STATE)
+
+            // [topBody] and [bottomBody] are colliding, but they will not move because the terrain of [groundBody] is
+            // undefined
+            val topBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i())
+            topBody.rigidBodyTransform = RigidBodyTransform(Vector3d(0.0, 10.0, 0.0), Quaterniond())
+            topBody.inertiaData = RigidBodyInertiaData(1.0, Matrix3d().identity())
+            sendSparseUpdate(physicsWorldReference, topBody.rigidBodyId, sparseUpdate)
+
+            val bottomBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i())
+            bottomBody.rigidBodyTransform = RigidBodyTransform(Vector3d(0.0, 10.5, 0.0), Quaterniond())
+            bottomBody.inertiaData = RigidBodyInertiaData(1.0, Matrix3d().identity())
+            sendSparseUpdate(physicsWorldReference, bottomBody.rigidBodyId, sparseUpdate)
+
+            // Simulate 1 second of physics
+            for (i in 0 until 60)
+                physicsWorldReference.tick(Vector3d(0.0, -10.0, 0.0), 1.0 / 60.0, true)
+
+            // Expect that topBody and bottomBody haven't moved
+            run {
+                val topBodyTransform = topBody.rigidBodyTransform
+                assertEquals(10.0, topBodyTransform.position.y(), 1e-3)
+
+                val bottomBodyTransform = bottomBody.rigidBodyTransform
+                assertEquals(10.5, bottomBodyTransform.position.y(), 1e-3)
+            }
+
+            // Then delete the ground body
+            physicsWorldReference.deleteRigidBody(groundBody.rigidBodyId)
+
+            // Simulate 1 second of physics
+            for (i in 0 until 60)
+                physicsWorldReference.tick(Vector3d(0.0, -10.0, 0.0), 1.0 / 60.0, true)
+
+            // Expect that topBody and bottomBody have moved
+            run {
+                val topBodyTransform = topBody.rigidBodyTransform
+                assertNotEquals(10.0, topBodyTransform.position.y(), 1e-3)
+
+                val bottomBodyTransform = bottomBody.rigidBodyTransform
+                assertNotEquals(10.5, bottomBodyTransform.position.y(), 1e-3)
             }
         } catch (e: Exception) {
             assertNotNull(e)
