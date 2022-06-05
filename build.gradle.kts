@@ -1,7 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.6.10"
     java
-    maven
     `maven-publish`
     application // Add a main class for testing loading binaries within the jar
 }
@@ -38,7 +37,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // VS Physics API
-    api("org.valkyrienskies:physics_api:1.0.0+e38bce7bd2")
+    api("org.valkyrienskies:physics_api:1.0.0+983f303d08")
 
     // JOML for Math
     api("org.joml", "joml", "1.10.0")

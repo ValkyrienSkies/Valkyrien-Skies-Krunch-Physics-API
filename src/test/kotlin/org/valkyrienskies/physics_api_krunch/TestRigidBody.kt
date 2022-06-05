@@ -165,4 +165,20 @@ class TestRigidBody {
             physicsWorldReference.deletePhysicsWorldResources()
         }
     }
+
+    @Test
+    fun testIsVoxelTerrainFullyLoaded() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            assertEquals(false, voxelBodyReference.isVoxelTerrainFullyLoaded)
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+            assertEquals(true, voxelBodyReference.isVoxelTerrainFullyLoaded)
+            voxelBodyReference.isVoxelTerrainFullyLoaded = false
+            assertEquals(false, voxelBodyReference.isVoxelTerrainFullyLoaded)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
 }

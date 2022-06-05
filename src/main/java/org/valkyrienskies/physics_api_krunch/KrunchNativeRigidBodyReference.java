@@ -108,6 +108,18 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
         setCollisionShapeOffset(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, offset.x(), offset.y(), offset.z());
     }
 
+    @Override
+    public boolean isVoxelTerrainFullyLoaded() throws UsingDeletedReferenceException {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        return getIsVoxelTerrainFullyLoaded(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
+    }
+
+    @Override
+    public void setVoxelTerrainFullyLoaded(boolean isVoxelTerrainFullyLoaded) throws UsingDeletedReferenceException {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        setIsVoxelTerrainFullyLoaded(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, isVoxelTerrainFullyLoaded);
+    }
+
     @NotNull
     @Override
     public RigidBodyInertiaData getInertiaData() throws UsingDeletedReferenceException {
@@ -171,7 +183,7 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
             cachedRigidBodyIndex = DELETED_CACHED_RIGID_BODY_INDEX_IN_PHYSICS_WORLD;
         } else {
             // Update the cached rigid body index
-            cachedRigidBodyIndex = getCachedRigidBodyIndex(physicsWorldReference.getPhysicsWorldPointer(), cachedRigidBodyIndex, rigidBodyUniqueId);
+            cachedRigidBodyIndex = getCachedRigidBodyIndex(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
         }
     }
 
@@ -273,6 +285,10 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     private static native Vector3dc getCollisionShapeOffset(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
     private static native void setCollisionShapeOffset(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double offsetX, double offsetY, double offsetZ);
+
+    private static native boolean getIsVoxelTerrainFullyLoaded(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
+
+    private static native void setIsVoxelTerrainFullyLoaded(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, boolean isVoxelTerrainFullyLoaded);
 
     private static native void getInertiaData(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull byte[] output);
 

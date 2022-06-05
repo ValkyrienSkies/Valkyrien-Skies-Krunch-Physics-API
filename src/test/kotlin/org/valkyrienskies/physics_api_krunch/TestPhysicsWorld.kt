@@ -6,7 +6,7 @@ import org.joml.Vector3d
 import org.joml.Vector3i
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.valkyrienskies.physics_api.RigidBodyInertiaData
@@ -39,6 +39,8 @@ class TestPhysicsWorld {
             topBody.rigidBodyTransform = RigidBodyTransform(Vector3d(0.0, 1.0, 0.0), Quaterniond())
             topBody.inertiaData = RigidBodyInertiaData(1.0, Matrix3d().identity())
             sendSparseUpdate(physicsWorldReference, topBody.rigidBodyId, sparseUpdate)
+            // Since we want [topBody] to move set isVoxelTerrainFullyLoaded to true
+            topBody.isVoxelTerrainFullyLoaded = true
 
             val groundBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i())
             groundBody.rigidBodyTransform = RigidBodyTransform(Vector3d(), Quaterniond())
@@ -75,7 +77,7 @@ class TestPhysicsWorld {
                 assertEquals(-0.5, topBodyTransform.position.y(), 1e-3)
             }
         } catch (e: Exception) {
-            assertNotNull(e)
+            assertNull(e)
         } finally {
             physicsWorldReference.deletePhysicsWorldResources()
         }
@@ -103,11 +105,15 @@ class TestPhysicsWorld {
             topBody.rigidBodyTransform = RigidBodyTransform(Vector3d(0.0, 10.0, 0.0), Quaterniond())
             topBody.inertiaData = RigidBodyInertiaData(1.0, Matrix3d().identity())
             sendSparseUpdate(physicsWorldReference, topBody.rigidBodyId, sparseUpdate)
+            // Since we want [topBody] to move set isVoxelTerrainFullyLoaded to true
+            topBody.isVoxelTerrainFullyLoaded = true
 
             val bottomBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i())
             bottomBody.rigidBodyTransform = RigidBodyTransform(Vector3d(0.0, 10.5, 0.0), Quaterniond())
             bottomBody.inertiaData = RigidBodyInertiaData(1.0, Matrix3d().identity())
             sendSparseUpdate(physicsWorldReference, bottomBody.rigidBodyId, sparseUpdate)
+            // Since we want [bottomBody] to move set isVoxelTerrainFullyLoaded to true
+            bottomBody.isVoxelTerrainFullyLoaded = true
 
             // Simulate 1 second of physics
             for (i in 0 until 60)
@@ -138,7 +144,7 @@ class TestPhysicsWorld {
                 assertNotEquals(10.5, bottomBodyTransform.position.y(), 1e-3)
             }
         } catch (e: Exception) {
-            assertNotNull(e)
+            assertNull(e)
         } finally {
             physicsWorldReference.deletePhysicsWorldResources()
         }
