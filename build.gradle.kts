@@ -28,7 +28,17 @@ repositories {
     mavenCentral()
     maven {
         name = "VS Maven"
-        url = uri("https://maven.valkyrienskies.org/")
+        url = uri(project.findProperty("vs_maven_url") ?: "https://maven.valkyrienskies.org/")
+
+        val vsMavenUsername = project.findProperty("vs_maven_username") as String?
+        val vsMavenPassword = project.findProperty("vs_maven_password") as String?
+
+        if (vsMavenPassword != null && vsMavenUsername != null) {
+            credentials {
+                username = vsMavenUsername
+                password = vsMavenPassword
+            }
+        }
     }
 }
 
@@ -92,12 +102,27 @@ publishing {
         val ghpPassword = (project.findProperty("gpr.key") ?: System.getenv("TOKEN")) as String?
         // Publish to Github Packages
         if (ghpUser != null && ghpPassword != null) {
+            println("Publishing to GitHub Packages")
             maven {
                 name = "GithubPackages"
                 url = uri("https://maven.pkg.github.com/ValkyrienSkies/Valkyrien-Skies-Krunch-Physics-API")
                 credentials {
                     username = ghpUser
                     password = ghpPassword
+                }
+            }
+        }
+
+        val vsMavenUsername = project.findProperty("vs_maven_username") as String?
+        val vsMavenPassword = project.findProperty("vs_maven_password") as String?
+        val vsMavenUrl = project.findProperty("vs_maven_url") as String?
+        if (vsMavenUrl != null && vsMavenPassword != null && vsMavenUsername != null) {
+            println("Publishing to VS Maven")
+            maven {
+                url = uri(vsMavenUrl)
+                credentials {
+                    username = vsMavenUsername
+                    password = vsMavenPassword
                 }
             }
         }
