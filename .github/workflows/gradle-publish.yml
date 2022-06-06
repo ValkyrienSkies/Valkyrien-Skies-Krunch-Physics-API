@@ -54,10 +54,10 @@ jobs:
           ORG_GRADLE_PROJECT_vs_maven_password: ${{ secrets.ORG_GRADLE_PROJECT_VS_MAVEN_PASSWORD }}
           ORG_GRADLE_PROJECT_vs_maven_url: ${{ secrets.ORG_GRADLE_PROJECT_VS_MAVEN_URL }}
           ORG_GRADLE_PROJECT_vs_maven_username: ${{ secrets.ORG_GRADLE_PROJECT_VS_MAVEN_USERNAME }}
-
-  - name: Cleanup Gradle Cache
+          
+    - name: Cleanup Gradle Cache
         # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
         # Restoring these files from a GitHub Actions cache might cause problems for future builds.
-        run: |
+      run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
