@@ -1,6 +1,7 @@
 package org.valkyrienskies.physics_api_krunch;
 
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
@@ -232,6 +233,64 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
         setOmega(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, omega.x(), omega.y(), omega.z());
     }
 
+    @Override
+    public void addInvariantForceAtPosToNextPhysTick(@NotNull Vector3dc forcePosInLocal, @NotNull Vector3dc invariantForce) {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        addInvariantForceAtPosToNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, forcePosInLocal.x(), forcePosInLocal.y(), forcePosInLocal.z(), invariantForce.x(), invariantForce.y(), invariantForce.z());
+    }
+
+    @Override
+    public void addInvariantForceToNextPhysTick(@NotNull Vector3dc invariantForce) {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        addInvariantForceToNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, invariantForce.x(), invariantForce.y(), invariantForce.z());
+    }
+
+    @Override
+    public void addInvariantTorqueToNextPhysTick(@NotNull Vector3dc invariantTorque) {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        addInvariantTorqueToNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, invariantTorque.x(), invariantTorque.y(), invariantTorque.z());
+    }
+
+    @Override
+    public void addRotDependentForceToNextPhysTick(@NotNull Vector3dc rotDepForce) {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        addRotDependentForceToNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, rotDepForce.x(), rotDepForce.y(), rotDepForce.z());
+    }
+
+    @Override
+    public void addRotDependentTorqueToNextPhysTick(@NotNull Vector3dc rotDepTorque) {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        addRotDependentTorqueToNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, rotDepTorque.x(), rotDepTorque.y(), rotDepTorque.z());
+    }
+
+    protected Vector3dc getTotalInvariantForceNextPhysTick() {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        double[] output = new double[3];
+        getTotalInvariantForcesNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, output);
+        return new Vector3d(output[0], output[1], output[2]);
+    }
+
+    protected Vector3dc getTotalInvariantTorqueNextPhysTick() {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        double[] output = new double[3];
+        getTotalInvariantTorquesNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, output);
+        return new Vector3d(output[0], output[1], output[2]);
+    }
+
+    protected Vector3dc getTotalRotDependentForceNextPhysTick() {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        double[] output = new double[3];
+        getTotalRotDependentForcesNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, output);
+        return new Vector3d(output[0], output[1], output[2]);
+    }
+
+    protected Vector3dc getTotalRotDependentTorqueNextPhysTick() {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        double[] output = new double[3];
+        getTotalRotDependentTorquesNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, output);
+        return new Vector3d(output[0], output[1], output[2]);
+    }
+
     /**
      * Gets the voxel state of the rigid body at the given block position. This should be used for testing purposes only.
      *
@@ -328,5 +387,23 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
      * This should only be used for testing
      */
     private static native void getSolidSetVoxels(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull int[] data);
+
+    private static native void addInvariantForceAtPosToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double forcePosInLocalX, double forcePosInLocalY, double forcePosInLocalZ, double invariantForceX, double invariantForceY, double invariantForceZ);
+
+    private static native void addInvariantForceToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double invariantForceX, double invariantForceY, double invariantForceZ);
+
+    private static native void addInvariantTorqueToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double invariantTorqueX, double invariantTorqueY, double invariantTorqueZ);
+
+    private static native void addRotDependentForceToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double rotDepForceX, double rotDepForceY, double rotDepForceZ);
+
+    private static native void addRotDependentTorqueToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double rotDepTorqueX, double rotDepTorqueY, double rotDepTorqueZ);
+
+    private static native void getTotalInvariantForcesNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
+
+    private static native void getTotalInvariantTorquesNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
+
+    private static native void getTotalRotDependentForcesNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
+
+    private static native void getTotalRotDependentTorquesNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
     // endregion
 }
