@@ -4,8 +4,10 @@ import org.joml.AxisAngle4d
 import org.joml.Matrix3d
 import org.joml.Quaterniond
 import org.joml.Vector3d
+import org.joml.Vector3dc
 import org.joml.Vector3i
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.valkyrienskies.physics_api.RigidBodyInertiaData
@@ -116,7 +118,8 @@ class TestRigidBody {
         try {
             val voxelBodyReference =
                 physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
-            val rigidBodyTransform = RigidBodyTransform(Vector3d(1.0, 2.0, 3.0), Quaterniond(AxisAngle4d(PI / 3.0, 0.0, 1.0, 0.0)))
+            val rigidBodyTransform =
+                RigidBodyTransform(Vector3d(1.0, 2.0, 3.0), Quaterniond(AxisAngle4d(PI / 3.0, 0.0, 1.0, 0.0)))
             voxelBodyReference.rigidBodyTransform = rigidBodyTransform
             assertEquals(rigidBodyTransform, voxelBodyReference.rigidBodyTransform)
         } finally {
@@ -177,6 +180,136 @@ class TestRigidBody {
             assertEquals(true, voxelBodyReference.isVoxelTerrainFullyLoaded)
             voxelBodyReference.isVoxelTerrainFullyLoaded = false
             assertEquals(false, voxelBodyReference.isVoxelTerrainFullyLoaded)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testAddRotDependentTorqueToNextPhysTick() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            assertEquals(Vector3d(), voxelBodyReference.totalRotDependentTorqueNextPhysTick)
+            voxelBodyReference.addRotDependentTorqueToNextPhysTick(Vector3d(1.0, 0.0, 0.0))
+            assertEquals(Vector3d(1.0, 0.0, 0.0), voxelBodyReference.totalRotDependentTorqueNextPhysTick)
+            voxelBodyReference.addRotDependentTorqueToNextPhysTick(Vector3d(1.0, 1.0, 0.0))
+            assertEquals(Vector3d(2.0, 1.0, 0.0), voxelBodyReference.totalRotDependentTorqueNextPhysTick)
+            voxelBodyReference.addRotDependentTorqueToNextPhysTick(Vector3d(1.0, 1.0, 1.0))
+            assertEquals(Vector3d(3.0, 2.0, 1.0), voxelBodyReference.totalRotDependentTorqueNextPhysTick)
+            voxelBodyReference.addRotDependentTorqueToNextPhysTick(Vector3d(0.5, 0.5, 0.5))
+            assertEquals(Vector3d(3.5, 2.5, 1.5), voxelBodyReference.totalRotDependentTorqueNextPhysTick)
+
+            // Assert that [voxelBodyReference.totalRotDependentTorqueNextPhysTick] is reset after the physics tick
+            physicsWorldReference.tick(Vector3d(), 1.0, true)
+            assertEquals(Vector3d(), voxelBodyReference.totalRotDependentTorqueNextPhysTick)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testAddInvariantTorqueToNextPhysTick() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            assertEquals(Vector3d(), voxelBodyReference.totalInvariantTorqueNextPhysTick)
+            voxelBodyReference.addInvariantTorqueToNextPhysTick(Vector3d(1.0, 0.0, 0.0))
+            assertEquals(Vector3d(1.0, 0.0, 0.0), voxelBodyReference.totalInvariantTorqueNextPhysTick)
+            voxelBodyReference.addInvariantTorqueToNextPhysTick(Vector3d(1.0, 1.0, 0.0))
+            assertEquals(Vector3d(2.0, 1.0, 0.0), voxelBodyReference.totalInvariantTorqueNextPhysTick)
+            voxelBodyReference.addInvariantTorqueToNextPhysTick(Vector3d(1.0, 1.0, 1.0))
+            assertEquals(Vector3d(3.0, 2.0, 1.0), voxelBodyReference.totalInvariantTorqueNextPhysTick)
+            voxelBodyReference.addInvariantTorqueToNextPhysTick(Vector3d(0.5, 0.5, 0.5))
+            assertEquals(Vector3d(3.5, 2.5, 1.5), voxelBodyReference.totalInvariantTorqueNextPhysTick)
+
+            // Assert that [voxelBodyReference.totalInvariantTorqueNextPhysTick] is reset after the physics tick
+            physicsWorldReference.tick(Vector3d(), 1.0, true)
+            assertEquals(Vector3d(), voxelBodyReference.totalInvariantTorqueNextPhysTick)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testAddRotDependentForceToNextPhysTick() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            assertEquals(Vector3d(), voxelBodyReference.totalRotDependentForceNextPhysTick)
+            voxelBodyReference.addRotDependentForceToNextPhysTick(Vector3d(1.0, 0.0, 0.0))
+            assertEquals(Vector3d(1.0, 0.0, 0.0), voxelBodyReference.totalRotDependentForceNextPhysTick)
+            voxelBodyReference.addRotDependentForceToNextPhysTick(Vector3d(1.0, 1.0, 0.0))
+            assertEquals(Vector3d(2.0, 1.0, 0.0), voxelBodyReference.totalRotDependentForceNextPhysTick)
+            voxelBodyReference.addRotDependentForceToNextPhysTick(Vector3d(1.0, 1.0, 1.0))
+            assertEquals(Vector3d(3.0, 2.0, 1.0), voxelBodyReference.totalRotDependentForceNextPhysTick)
+            voxelBodyReference.addRotDependentForceToNextPhysTick(Vector3d(0.5, 0.5, 0.5))
+            assertEquals(Vector3d(3.5, 2.5, 1.5), voxelBodyReference.totalRotDependentForceNextPhysTick)
+
+            // Assert that [voxelBodyReference.totalRotDependentForceNextPhysTick] is reset after the physics tick
+            physicsWorldReference.tick(Vector3d(), 1.0, true)
+            assertEquals(Vector3d(), voxelBodyReference.totalRotDependentForceNextPhysTick)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testAddInvariantForceToNextPhysTick() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            assertEquals(Vector3d(), voxelBodyReference.totalInvariantForceNextPhysTick)
+            voxelBodyReference.addInvariantForceToNextPhysTick(Vector3d(1.0, 0.0, 0.0))
+            assertEquals(Vector3d(1.0, 0.0, 0.0), voxelBodyReference.totalInvariantForceNextPhysTick)
+            voxelBodyReference.addInvariantForceToNextPhysTick(Vector3d(1.0, 1.0, 0.0))
+            assertEquals(Vector3d(2.0, 1.0, 0.0), voxelBodyReference.totalInvariantForceNextPhysTick)
+            voxelBodyReference.addInvariantForceToNextPhysTick(Vector3d(1.0, 1.0, 1.0))
+            assertEquals(Vector3d(3.0, 2.0, 1.0), voxelBodyReference.totalInvariantForceNextPhysTick)
+            voxelBodyReference.addInvariantForceToNextPhysTick(Vector3d(0.5, 0.5, 0.5))
+            assertEquals(Vector3d(3.5, 2.5, 1.5), voxelBodyReference.totalInvariantForceNextPhysTick)
+
+            // Assert that [voxelBodyReference.totalInvariantForceNextPhysTick] is reset after the physics tick
+            physicsWorldReference.tick(Vector3d(), 1.0, true)
+            assertEquals(Vector3d(), voxelBodyReference.totalInvariantForceNextPhysTick)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testAddInvariantForceAtPosToNextPhysTick() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            val invariantForces0 = voxelBodyReference.invariantForcesAtPosNextPhysTick
+            assertTrue(invariantForces0.isEmpty())
+
+            val addedInvariantForces = ArrayList<Pair<Vector3dc, Vector3dc>>()
+
+            addedInvariantForces.add(Pair(Vector3d(1.0, 0.0, 0.0), Vector3d(1.0, 2.0, 3.0)))
+            voxelBodyReference.addInvariantForceAtPosToNextPhysTick(
+                addedInvariantForces[0].first,
+                addedInvariantForces[0].second
+            )
+            assertEquals(addedInvariantForces, voxelBodyReference.invariantForcesAtPosNextPhysTick)
+
+            addedInvariantForces.add(Pair(Vector3d(-2.0, 5.0, 10.0), Vector3d(6.0, 2.0, 0.0)))
+            voxelBodyReference.addInvariantForceAtPosToNextPhysTick(
+                addedInvariantForces[1].first,
+                addedInvariantForces[1].second
+            )
+            assertEquals(addedInvariantForces, voxelBodyReference.invariantForcesAtPosNextPhysTick)
+
+            // Assert that [voxelBodyReference.totalInvariantForceNextPhysTick] is reset after the physics tick
+            physicsWorldReference.tick(Vector3d(), 1.0, true)
+            val invariantForces5 = voxelBodyReference.invariantForcesAtPosNextPhysTick
+            assertTrue(invariantForces5.isEmpty())
         } finally {
             physicsWorldReference.deletePhysicsWorldResources()
         }

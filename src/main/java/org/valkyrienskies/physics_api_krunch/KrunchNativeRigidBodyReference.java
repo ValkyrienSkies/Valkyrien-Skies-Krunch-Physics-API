@@ -1,5 +1,6 @@
 package org.valkyrienskies.physics_api_krunch;
 
+import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -291,6 +292,23 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
         return new Vector3d(output[0], output[1], output[2]);
     }
 
+    protected List<Pair<Vector3dc, Vector3dc>> getInvariantForcesAtPosNextPhysTick() {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        int invariantForcesCount = getInvariantForcesAtPosNextPhysTickCount(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
+        double[] output = new double[invariantForcesCount * 6];
+        getInvariantForcesAtPosNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, output);
+        List<Pair<Vector3dc, Vector3dc>> toReturn = new ArrayList<>();
+
+        for (int i = 0; i < invariantForcesCount; i++) {
+            int baseIndex = i * 6;
+            Vector3dc forcePosInLocal = new Vector3d(output[baseIndex], output[baseIndex + 1], output[baseIndex + 2]);
+            Vector3dc invariantForce = new Vector3d(output[baseIndex + 3], output[baseIndex + 4], output[baseIndex + 5]);
+            toReturn.add(new Pair<>(forcePosInLocal, invariantForce));
+        }
+
+        return toReturn;
+    }
+
     /**
      * Gets the voxel state of the rigid body at the given block position. This should be used for testing purposes only.
      *
@@ -405,5 +423,8 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     private static native void getTotalRotDependentForcesNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
 
     private static native void getTotalRotDependentTorquesNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
+
+    private static native int getInvariantForcesAtPosNextPhysTickCount(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex);
+    private static native void getInvariantForcesAtPosNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
     // endregion
 }
