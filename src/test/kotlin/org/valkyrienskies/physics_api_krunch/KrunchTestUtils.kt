@@ -1,7 +1,11 @@
 package org.valkyrienskies.physics_api_krunch
 
+import org.joml.Matrix3d
 import org.joml.Vector3d
+import org.joml.Vector3dc
+import org.junit.jupiter.api.Assertions
 import org.valkyrienskies.physics_api.PhysicsWorldReference
+import org.valkyrienskies.physics_api.RigidBodyInertiaData
 import org.valkyrienskies.physics_api.voxel_updates.DeleteVoxelShapeUpdate
 import org.valkyrienskies.physics_api.voxel_updates.DenseVoxelShapeUpdate
 import org.valkyrienskies.physics_api.voxel_updates.EmptyVoxelShapeUpdate
@@ -35,5 +39,21 @@ internal object KrunchTestUtils {
         physicsWorldReference.queueVoxelShapeUpdates(arrayOf(voxelShapeUpdates))
         // Tick the physics world to apply the queued voxel shape updates
         physicsWorldReference.tick(Vector3d(), 1.0, false)
+    }
+
+    /**
+     * Generate a [RigidBodyInertiaData] with an invMass of 1.0, and an inertia tensor of identity.
+     */
+    internal fun generateUnitInertiaData(): RigidBodyInertiaData {
+        return RigidBodyInertiaData(1.0, Matrix3d())
+    }
+
+    /**
+     * Asserts that two [Vector3dc] are *nearly* equal, within [epsilon] precision.
+     */
+    internal fun assertVecNearlyEquals(expected: Vector3dc, actual: Vector3dc, epsilon: Double = 1e-8) {
+        Assertions.assertEquals(expected.x(), actual.x(), epsilon)
+        Assertions.assertEquals(expected.y(), actual.y(), epsilon)
+        Assertions.assertEquals(expected.z(), actual.z(), epsilon)
     }
 }
