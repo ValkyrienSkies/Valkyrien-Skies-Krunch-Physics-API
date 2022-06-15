@@ -389,6 +389,16 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
 
     private static native void setOmega(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double omegaX, double omegaY, double omegaZ);
 
+    private static native void addInvariantForceAtPosToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double forcePosInLocalX, double forcePosInLocalY, double forcePosInLocalZ, double invariantForceX, double invariantForceY, double invariantForceZ);
+
+    private static native void addInvariantForceToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double invariantForceX, double invariantForceY, double invariantForceZ);
+
+    private static native void addInvariantTorqueToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double invariantTorqueX, double invariantTorqueY, double invariantTorqueZ);
+
+    private static native void addRotDependentForceToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double rotDepForceX, double rotDepForceY, double rotDepForceZ);
+
+    private static native void addRotDependentTorqueToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double rotDepTorqueX, double rotDepTorqueY, double rotDepTorqueZ);
+
     /**
      * This should only be used for testing
      *
@@ -406,16 +416,6 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
      */
     private static native void getSolidSetVoxels(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, @NotNull int[] data);
 
-    private static native void addInvariantForceAtPosToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double forcePosInLocalX, double forcePosInLocalY, double forcePosInLocalZ, double invariantForceX, double invariantForceY, double invariantForceZ);
-
-    private static native void addInvariantForceToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double invariantForceX, double invariantForceY, double invariantForceZ);
-
-    private static native void addInvariantTorqueToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double invariantTorqueX, double invariantTorqueY, double invariantTorqueZ);
-
-    private static native void addRotDependentForceToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double rotDepForceX, double rotDepForceY, double rotDepForceZ);
-
-    private static native void addRotDependentTorqueToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double rotDepTorqueX, double rotDepTorqueY, double rotDepTorqueZ);
-
     private static native void getTotalInvariantForcesNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
 
     private static native void getTotalInvariantTorquesNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
@@ -425,6 +425,7 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     private static native void getTotalRotDependentTorquesNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
 
     private static native int getInvariantForcesAtPosNextPhysTickCount(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex);
+
     private static native void getInvariantForcesAtPosNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, @NotNull double[] data);
     // endregion
 }
