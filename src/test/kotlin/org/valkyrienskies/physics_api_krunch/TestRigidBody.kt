@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.valkyrienskies.physics_api.RigidBodyInertiaData
 import org.valkyrienskies.physics_api.RigidBodyTransform
+import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.assertVecNearlyEquals
+import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.generateUnitInertiaData
 import kotlin.math.PI
 
 class TestRigidBody {
@@ -191,6 +193,10 @@ class TestRigidBody {
         try {
             val voxelBodyReference =
                 physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            voxelBodyReference.inertiaData = generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
             assertEquals(Vector3d(), voxelBodyReference.totalRotDependentTorqueNextPhysTick)
             voxelBodyReference.addRotDependentTorqueToNextPhysTick(Vector3d(1.0, 0.0, 0.0))
             assertEquals(Vector3d(1.0, 0.0, 0.0), voxelBodyReference.totalRotDependentTorqueNextPhysTick)
@@ -215,6 +221,10 @@ class TestRigidBody {
         try {
             val voxelBodyReference =
                 physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            voxelBodyReference.inertiaData = generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
             assertEquals(Vector3d(), voxelBodyReference.totalInvariantTorqueNextPhysTick)
             voxelBodyReference.addInvariantTorqueToNextPhysTick(Vector3d(1.0, 0.0, 0.0))
             assertEquals(Vector3d(1.0, 0.0, 0.0), voxelBodyReference.totalInvariantTorqueNextPhysTick)
@@ -239,6 +249,10 @@ class TestRigidBody {
         try {
             val voxelBodyReference =
                 physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            voxelBodyReference.inertiaData = generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
             assertEquals(Vector3d(), voxelBodyReference.totalRotDependentForceNextPhysTick)
             voxelBodyReference.addRotDependentForceToNextPhysTick(Vector3d(1.0, 0.0, 0.0))
             assertEquals(Vector3d(1.0, 0.0, 0.0), voxelBodyReference.totalRotDependentForceNextPhysTick)
@@ -263,6 +277,10 @@ class TestRigidBody {
         try {
             val voxelBodyReference =
                 physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            voxelBodyReference.inertiaData = generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
             assertEquals(Vector3d(), voxelBodyReference.totalInvariantForceNextPhysTick)
             voxelBodyReference.addInvariantForceToNextPhysTick(Vector3d(1.0, 0.0, 0.0))
             assertEquals(Vector3d(1.0, 0.0, 0.0), voxelBodyReference.totalInvariantForceNextPhysTick)
@@ -287,6 +305,10 @@ class TestRigidBody {
         try {
             val voxelBodyReference =
                 physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            voxelBodyReference.inertiaData = generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
             val invariantForces0 = voxelBodyReference.invariantForcesAtPosNextPhysTick
             assertTrue(invariantForces0.isEmpty())
 
@@ -310,6 +332,37 @@ class TestRigidBody {
             physicsWorldReference.tick(Vector3d(), 1.0, true)
             val invariantForces5 = voxelBodyReference.invariantForcesAtPosNextPhysTick
             assertTrue(invariantForces5.isEmpty())
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testInvariantForcesAddedToNextPhysTick() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            voxelBodyReference.inertiaData = generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
+            assertEquals(Vector3d(), voxelBodyReference.totalInvariantForceNextPhysTick)
+            voxelBodyReference.addInvariantForceToNextPhysTick(Vector3d(1.0, 0.0, 0.0))
+            assertEquals(Vector3d(1.0, 0.0, 0.0), voxelBodyReference.totalInvariantForceNextPhysTick)
+            voxelBodyReference.addInvariantForceToNextPhysTick(Vector3d(1.0, 1.0, 0.0))
+            assertEquals(Vector3d(2.0, 1.0, 0.0), voxelBodyReference.totalInvariantForceNextPhysTick)
+            voxelBodyReference.addInvariantForceToNextPhysTick(Vector3d(1.0, 1.0, 1.0))
+            assertEquals(Vector3d(3.0, 2.0, 1.0), voxelBodyReference.totalInvariantForceNextPhysTick)
+            voxelBodyReference.addInvariantForceToNextPhysTick(Vector3d(0.5, 0.5, 0.5))
+            assertEquals(Vector3d(3.5, 2.5, 1.5), voxelBodyReference.totalInvariantForceNextPhysTick)
+
+            // Assert that [voxelBodyReference.totalInvariantForceNextPhysTick] is reset after the physics tick
+            physicsWorldReference.tick(Vector3d(), 1.0, true)
+            assertEquals(Vector3d(), voxelBodyReference.totalInvariantForceNextPhysTick)
+
+            // Assert that the rigid body was moved by the appropriate amount
+            assertVecNearlyEquals(Vector3d(3.5, 2.5, 1.5), voxelBodyReference.velocity)
         } finally {
             physicsWorldReference.deletePhysicsWorldResources()
         }
