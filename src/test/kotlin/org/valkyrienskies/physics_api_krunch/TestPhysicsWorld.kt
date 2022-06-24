@@ -4,6 +4,8 @@ import org.joml.Matrix3d
 import org.joml.Quaterniond
 import org.joml.Vector3d
 import org.joml.Vector3i
+import org.joml.primitives.AABBi
+import org.joml.primitives.AABBic
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -22,6 +24,8 @@ class TestPhysicsWorld {
         fun loadNativeBinaries() {
             KrunchBootstrap.loadNativeBinaries()
         }
+
+        val totalVoxelRegion: AABBic = AABBi(-128, -128, -128, 127, 127, 127)
     }
 
     /**
@@ -35,20 +39,20 @@ class TestPhysicsWorld {
             val sparseUpdate = SparseVoxelShapeUpdate(0, 0, 0, runImmediately = true)
             sparseUpdate.addUpdate(0, 0, 0, KrunchVoxelStates.SOLID_STATE)
 
-            val topBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i())
+            val topBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i(), totalVoxelRegion)
             topBody.rigidBodyTransform = RigidBodyTransform(Vector3d(0.0, 1.0, 0.0), Quaterniond())
             topBody.inertiaData = RigidBodyInertiaData(1.0, Matrix3d().identity())
             sendSparseUpdate(physicsWorldReference, topBody.rigidBodyId, sparseUpdate)
             // Since we want [topBody] to move set isVoxelTerrainFullyLoaded to true
             topBody.isVoxelTerrainFullyLoaded = true
 
-            val groundBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i())
+            val groundBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i(), totalVoxelRegion)
             groundBody.rigidBodyTransform = RigidBodyTransform(Vector3d(), Quaterniond())
             groundBody.isStatic = true
             groundBody.inertiaData = RigidBodyInertiaData(1.0, Matrix3d().identity())
             sendSparseUpdate(physicsWorldReference, groundBody.rigidBodyId, sparseUpdate)
 
-            val groundBody2 = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i())
+            val groundBody2 = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i(), totalVoxelRegion)
             groundBody2.rigidBodyTransform = RigidBodyTransform(Vector3d(0.0, -1.5, -0.0), Quaterniond())
             groundBody2.isStatic = true
             groundBody2.inertiaData = RigidBodyInertiaData(1.0, Matrix3d().identity())
@@ -92,7 +96,8 @@ class TestPhysicsWorld {
             val groundBody = physicsWorldReference.createVoxelRigidBody(
                 0,
                 Vector3i(Int.MIN_VALUE, 0, Int.MIN_VALUE),
-                Vector3i(Int.MAX_VALUE, 255, Int.MAX_VALUE)
+                Vector3i(Int.MAX_VALUE, 255, Int.MAX_VALUE),
+                totalVoxelRegion
             )
             groundBody.isStatic = true
 
@@ -101,14 +106,14 @@ class TestPhysicsWorld {
 
             // [topBody] and [bottomBody] are colliding, but they will not move because the terrain of [groundBody] is
             // undefined
-            val topBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i())
+            val topBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i(), totalVoxelRegion)
             topBody.rigidBodyTransform = RigidBodyTransform(Vector3d(0.0, 10.0, 0.0), Quaterniond())
             topBody.inertiaData = RigidBodyInertiaData(1.0, Matrix3d().identity())
             sendSparseUpdate(physicsWorldReference, topBody.rigidBodyId, sparseUpdate)
             // Since we want [topBody] to move set isVoxelTerrainFullyLoaded to true
             topBody.isVoxelTerrainFullyLoaded = true
 
-            val bottomBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i())
+            val bottomBody = physicsWorldReference.createVoxelRigidBody(0, Vector3i(), Vector3i(), totalVoxelRegion)
             bottomBody.rigidBodyTransform = RigidBodyTransform(Vector3d(0.0, 10.5, 0.0), Quaterniond())
             bottomBody.inertiaData = RigidBodyInertiaData(1.0, Matrix3d().identity())
             sendSparseUpdate(physicsWorldReference, bottomBody.rigidBodyId, sparseUpdate)

@@ -2,6 +2,8 @@ package org.valkyrienskies.physics_api_krunch
 
 import org.joml.Vector3i
 import org.joml.Vector3ic
+import org.joml.primitives.AABBi
+import org.joml.primitives.AABBic
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -23,6 +25,8 @@ class TestVoxelRigidBody {
         fun loadNativeBinaries() {
             KrunchBootstrap.loadNativeBinaries()
         }
+
+        val totalVoxelRegion: AABBic = AABBi(-128, -128, -128, 127, 127, 127)
     }
 
     @Test
@@ -30,7 +34,7 @@ class TestVoxelRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
 
             // We expect [VOXEL_STATE_UNLOADED] because we haven't sent any voxel shape updates and the shape is defined between (0, 0, 0) and (15, 15, 15)
             val voxelState = voxelBodyReference.getVoxelState(0, 0, 0)
@@ -57,7 +61,7 @@ class TestVoxelRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(16, 0, -16), Vector3i(31, 15, -1))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(16, 0, -16), Vector3i(31, 15, -1), totalVoxelRegion)
 
             // We expect [VOXEL_STATE_UNLOADED] because we haven't sent any voxel shape updates and the shape is defined between (16, 0, -16) and (31, 15, -1)
             val voxelState = voxelBodyReference.getVoxelState(18, 0, -5)
@@ -92,7 +96,7 @@ class TestVoxelRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
 
             // We expect [VOXEL_STATE_UNLOADED] because we haven't sent any voxel shape updates and the shape is defined between (0, 0, 0) and (15, 15, 15)
             val voxelState = voxelBodyReference.getVoxelState(0, 0, 0)
@@ -126,7 +130,7 @@ class TestVoxelRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
 
             // We expect [VOXEL_STATE_UNLOADED] because we haven't sent any voxel shape updates and the shape is defined between (0, 0, 0) and (15, 15, 15)
             val voxelState = voxelBodyReference.getVoxelState(0, 0, 0)
@@ -164,7 +168,7 @@ class TestVoxelRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
 
             // We expect [VOXEL_STATE_UNLOADED] because we haven't sent any voxel shape updates and the shape is defined between (0, 0, 0) and (15, 15, 15)
             val voxelState = voxelBodyReference.getVoxelState(0, 0, 0)
@@ -202,7 +206,7 @@ class TestVoxelRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
 
             // We expect [VOXEL_STATE_UNLOADED] because we haven't sent any voxel shape updates and the shape is defined between (0, 0, 0) and (15, 15, 15)
             val voxelState = voxelBodyReference.getVoxelState(1, 0, 0)
@@ -246,7 +250,7 @@ class TestVoxelRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
 
             // We expect the empty list because we haven't sent any voxel shape updates
             val setVoxels = voxelBodyReference.solidSetVoxels
@@ -289,7 +293,7 @@ class TestVoxelRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
 
             val setVoxelsGroundTruth = HashSet<Vector3ic>()
 
@@ -328,7 +332,7 @@ class TestVoxelRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
 
             // We expect [VOXEL_STATE_UNLOADED] because we haven't sent any voxel shape updates and the shape is defined between (0, 0, 0) and (15, 15, 15)
             val voxelState = voxelBodyReference.getVoxelState(0, 0, 0)

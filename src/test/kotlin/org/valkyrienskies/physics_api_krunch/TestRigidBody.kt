@@ -6,6 +6,8 @@ import org.joml.Quaterniond
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.joml.Vector3i
+import org.joml.primitives.AABBi
+import org.joml.primitives.AABBic
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
@@ -23,6 +25,8 @@ class TestRigidBody {
         fun loadNativeBinaries() {
             KrunchBootstrap.loadNativeBinaries()
         }
+
+        val totalVoxelRegion: AABBic = AABBi(-128, -128, -128, 127, 127, 127)
     }
 
     @Test
@@ -30,7 +34,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             val dynamicFrictionCoefficient = 0.8
             voxelBodyReference.dynamicFrictionCoefficient = dynamicFrictionCoefficient
             assertEquals(dynamicFrictionCoefficient, voxelBodyReference.dynamicFrictionCoefficient)
@@ -44,7 +48,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             voxelBodyReference.isStatic = true
             assertEquals(true, voxelBodyReference.isStatic)
             voxelBodyReference.isStatic = false
@@ -59,7 +63,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             val restitutionCoefficient = 0.8
             voxelBodyReference.restitutionCoefficient = restitutionCoefficient
             assertEquals(restitutionCoefficient, voxelBodyReference.restitutionCoefficient)
@@ -73,7 +77,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             val staticFrictionCoefficient = 0.8
             voxelBodyReference.staticFrictionCoefficient = staticFrictionCoefficient
             assertEquals(staticFrictionCoefficient, voxelBodyReference.staticFrictionCoefficient)
@@ -87,7 +91,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             val collisionShapeOffset = Vector3d(1.0, 2.0, 3.0)
             voxelBodyReference.collisionShapeOffset = collisionShapeOffset
             assertEquals(collisionShapeOffset, voxelBodyReference.collisionShapeOffset)
@@ -101,7 +105,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             val invMOI = Matrix3d()
             invMOI.m00 = 1.0
             invMOI.m11 = 5e-1
@@ -119,7 +123,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             val rigidBodyTransform =
                 RigidBodyTransform(Vector3d(1.0, 2.0, 3.0), Quaterniond(AxisAngle4d(PI / 3.0, 0.0, 1.0, 0.0)))
             voxelBodyReference.rigidBodyTransform = rigidBodyTransform
@@ -134,7 +138,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             val collisionShapeScaling = 2.5
             voxelBodyReference.collisionShapeScaling = collisionShapeScaling
             assertEquals(collisionShapeScaling, voxelBodyReference.collisionShapeScaling)
@@ -148,7 +152,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             assertEquals(false, voxelBodyReference.hasBeenDeleted())
             physicsWorldReference.deleteRigidBody(voxelBodyReference.rigidBodyId)
             assertEquals(true, voxelBodyReference.hasBeenDeleted())
@@ -162,7 +166,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             assertEquals(false, voxelBodyReference.hasBeenDeleted())
             physicsWorldReference.deletePhysicsWorldResources()
             assertEquals(true, voxelBodyReference.hasBeenDeleted())
@@ -176,7 +180,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             assertEquals(false, voxelBodyReference.isVoxelTerrainFullyLoaded)
             voxelBodyReference.isVoxelTerrainFullyLoaded = true
             assertEquals(true, voxelBodyReference.isVoxelTerrainFullyLoaded)
@@ -192,7 +196,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             voxelBodyReference.inertiaData = generateUnitInertiaData()
             // Set fully loaded to allow this body to move
             voxelBodyReference.isVoxelTerrainFullyLoaded = true
@@ -220,7 +224,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             voxelBodyReference.inertiaData = generateUnitInertiaData()
             // Set fully loaded to allow this body to move
             voxelBodyReference.isVoxelTerrainFullyLoaded = true
@@ -248,7 +252,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             voxelBodyReference.inertiaData = generateUnitInertiaData()
             // Set fully loaded to allow this body to move
             voxelBodyReference.isVoxelTerrainFullyLoaded = true
@@ -276,7 +280,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             voxelBodyReference.inertiaData = generateUnitInertiaData()
             // Set fully loaded to allow this body to move
             voxelBodyReference.isVoxelTerrainFullyLoaded = true
@@ -304,7 +308,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             voxelBodyReference.inertiaData = generateUnitInertiaData()
             // Set fully loaded to allow this body to move
             voxelBodyReference.isVoxelTerrainFullyLoaded = true
@@ -342,7 +346,7 @@ class TestRigidBody {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
         try {
             val voxelBodyReference =
-                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
             voxelBodyReference.inertiaData = generateUnitInertiaData()
             // Set fully loaded to allow this body to move
             voxelBodyReference.isVoxelTerrainFullyLoaded = true
