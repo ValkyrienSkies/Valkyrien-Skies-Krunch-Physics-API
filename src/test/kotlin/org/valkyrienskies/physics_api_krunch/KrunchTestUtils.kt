@@ -3,6 +3,7 @@ package org.valkyrienskies.physics_api_krunch
 import org.joml.Matrix3d
 import org.joml.Vector3d
 import org.joml.Vector3dc
+import org.joml.Vector3ic
 import org.junit.jupiter.api.Assertions
 import org.valkyrienskies.physics_api.PhysicsWorldReference
 import org.valkyrienskies.physics_api.RigidBodyInertiaData
@@ -36,6 +37,15 @@ internal object KrunchTestUtils {
 
     internal fun sendDeleteUpdate(physicsWorldReference: PhysicsWorldReference, rigidBodyId: Int, deleteUpdate: DeleteVoxelShapeUpdate) {
         val voxelShapeUpdates = VoxelRigidBodyShapeUpdates(rigidBodyId, arrayOf(deleteUpdate))
+        physicsWorldReference.queueVoxelShapeUpdates(arrayOf(voxelShapeUpdates))
+        // Tick the physics world to apply the queued voxel shape updates
+        physicsWorldReference.tick(Vector3d(), 1.0, false)
+    }
+
+    internal fun setBlock(physicsWorldReference: PhysicsWorldReference, rigidBodyId: Int, pos: Vector3ic, voxelState: Byte) {
+        val sparseUpdate = SparseVoxelShapeUpdate(pos.x() shr 4, pos.y() shr 4, pos.z() shr 4, true)
+        sparseUpdate.addUpdate(pos.x() and 15, pos.y() and 15, pos.z() and 15, voxelState)
+        val voxelShapeUpdates = VoxelRigidBodyShapeUpdates(rigidBodyId, arrayOf(sparseUpdate))
         physicsWorldReference.queueVoxelShapeUpdates(arrayOf(voxelShapeUpdates))
         // Tick the physics world to apply the queued voxel shape updates
         physicsWorldReference.tick(Vector3d(), 1.0, false)

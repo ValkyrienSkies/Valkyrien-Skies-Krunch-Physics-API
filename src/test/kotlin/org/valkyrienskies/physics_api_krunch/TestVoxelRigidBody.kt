@@ -4,9 +4,11 @@ import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.joml.primitives.AABBi
 import org.joml.primitives.AABBic
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.valkyrienskies.physics_api.PhysicsWorldReference
 import org.valkyrienskies.physics_api.voxel_updates.DeleteVoxelShapeUpdate
 import org.valkyrienskies.physics_api.voxel_updates.DenseVoxelShapeUpdate
 import org.valkyrienskies.physics_api.voxel_updates.EmptyVoxelShapeUpdate
@@ -375,6 +377,249 @@ class TestVoxelRigidBody {
             // Expect air because [emptyUpdate2] has overwriteExistingVoxels=true
             val voxelState7 = voxelBodyReference.getVoxelState(3, 4, 5).toByte()
             assertEquals(KrunchVoxelStates.AIR_STATE, voxelState7)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testGetVoxelShapeAABB() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15),
+                    TestRigidBody.totalVoxelRegion
+                )
+            voxelBodyReference.inertiaData = KrunchTestUtils.generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
+            val aabb = AABBi()
+            // True when empty, set to min of voxel region - 1
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(-129, -129, -129, -129, -129, -129), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 1, 1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(1, 1, 1, 1, 1, 1), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(2, 2, 2),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(1, 1, 1, 2, 2, 2), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 2, 1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(1, 1, 1, 2, 2, 2), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 2, 1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(1, 1, 1, 2, 2, 2), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(2, 2, 2),
+                KrunchVoxelStates.AIR_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(1, 1, 1, 1, 2, 1), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(-1, -1, -1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(-1, -1, -1, 1, 2, 1), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 1, 1),
+                KrunchVoxelStates.AIR_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(-1, -1, -1, 1, 2, 1), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 2, 1),
+                KrunchVoxelStates.AIR_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(-1, -1, -1, -1, -1, -1), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(-1, -1, -1),
+                KrunchVoxelStates.AIR_STATE
+            )
+            // True when empty, set to min of voxel region - 1
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(-129, -129, -129, -129, -129, -129), aabb)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testGetVoxelShapeAABB2() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15),
+                    TestRigidBody.totalVoxelRegion
+                )
+            voxelBodyReference.inertiaData = KrunchTestUtils.generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
+            val aabb = AABBi()
+            // True when empty, set to min of voxel region - 1
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(-129, -129, -129, -129, -129, -129), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 1, 1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(1, 1, 1, 1, 1, 1), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(2, 2, 2),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(1, 1, 1, 2, 2, 2), aabb)
+
+            // Assert that setting a block outside the voxel range invalidates the AABB generator
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(-1000, -1000, -1000),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testGetVoxelShapeAABBForInfiniteShape() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15),
+                    PhysicsWorldReference.INFINITE_VOXEL_REGION
+                )
+            voxelBodyReference.inertiaData = KrunchTestUtils.generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
+            val aabb = AABBi()
+            // False because the voxel region is infinite
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 1, 1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(2, 2, 2),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 2, 1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 2, 1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(2, 2, 2),
+                KrunchVoxelStates.AIR_STATE
+            )
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(-1, -1, -1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 1, 1),
+                KrunchVoxelStates.AIR_STATE
+            )
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 2, 1),
+                KrunchVoxelStates.AIR_STATE
+            )
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(-1, -1, -1),
+                KrunchVoxelStates.AIR_STATE
+            )
+            Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
         } finally {
             physicsWorldReference.deletePhysicsWorldResources()
         }

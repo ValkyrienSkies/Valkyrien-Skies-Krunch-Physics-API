@@ -6,6 +6,8 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
+import org.joml.primitives.AABBd;
+import org.joml.primitives.AABBi;
 import org.valkyrienskies.physics_api.PhysicsWorldReference;
 import org.valkyrienskies.physics_api.RigidBodyInertiaData;
 import org.valkyrienskies.physics_api.RigidBodyReference;
@@ -264,6 +266,36 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
         addRotDependentTorqueToNextPhysTick(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, rotDepTorque.x(), rotDepTorque.y(), rotDepTorque.z());
     }
 
+    @Override
+    public boolean getAABB(@NotNull AABBd outputBB) {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        final double[] output = new double[6];
+        boolean success = getAABB(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, output);
+        if (!success) return false;
+        outputBB.minX = output[0];
+        outputBB.minY = output[1];
+        outputBB.minZ = output[2];
+        outputBB.maxX = output[3];
+        outputBB.maxY = output[4];
+        outputBB.maxZ = output[5];
+        return true;
+    }
+
+    @Override
+    public boolean getVoxelShapeAABB(@NotNull AABBi outputBB) {
+        updateCachedIndexAndEnsureReferenceNotDeleted();
+        final int[] output = new int[6];
+        boolean success = getVoxelShapeAABB(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex, output);
+        if (!success) return false;
+        outputBB.minX = output[0];
+        outputBB.minY = output[1];
+        outputBB.minZ = output[2];
+        outputBB.maxX = output[3];
+        outputBB.maxY = output[4];
+        outputBB.maxZ = output[5];
+        return true;
+    }
+
     protected Vector3dc getTotalInvariantForceNextPhysTick() {
         updateCachedIndexAndEnsureReferenceNotDeleted();
         double[] output = new double[3];
@@ -398,6 +430,10 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     private static native void addRotDependentForceToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double rotDepForceX, double rotDepForceY, double rotDepForceZ);
 
     private static native void addRotDependentTorqueToNextPhysTick(long physicsWorldPointer, int rigidBodyUniqueId, int cachedRigidBodyIndex, double rotDepTorqueX, double rotDepTorqueY, double rotDepTorqueZ);
+
+    private static native boolean getVoxelShapeAABB(long physicsWorldPointer, int rigidBodyId, int cachedRigidBodyIndex, @NotNull int[] output);
+
+    private static native boolean getAABB(long physicsWorldPointer, int rigidBodyId, int cachedRigidBodyIndex, @NotNull double[] output);
 
     /**
      * This should only be used for testing
