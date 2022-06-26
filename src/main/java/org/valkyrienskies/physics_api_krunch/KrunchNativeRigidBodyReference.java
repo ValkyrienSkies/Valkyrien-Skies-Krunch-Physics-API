@@ -204,12 +204,6 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
         return physicsWorldReference;
     }
 
-    @Override
-    public int getInitialDimension() throws UsingDeletedReferenceException {
-        updateCachedIndexAndEnsureReferenceNotDeleted();
-        return getInitialDimension(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
-    }
-
     @NotNull
     @Override
     public Vector3dc getVelocity() throws UsingDeletedReferenceException {
@@ -410,8 +404,6 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
     private static native double getCollisionShapeScaling(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
     private static native void setCollisionShapeScaling(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex, double scaling);
-
-    private static native int getInitialDimension(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
     private static native Vector3dc getVelocity(long physicsWorldPointer, int rigidBodyUniqueId, int cachedIndex);
 
