@@ -357,6 +357,10 @@ class KrunchNativeRigidBodyReference implements RigidBodyReference {
         return toReturn;
     }
 
+    protected boolean isStaticUnsafe() throws IllegalArgumentException {
+        return getIsStatic(physicsWorldReference.getPhysicsWorldPointer(), rigidBodyUniqueId, cachedRigidBodyIndex);
+    }
+
     // region Native Functions
     /**
      * @param physicsWorldPointer The pointer to the physics world this rigid body exists in

@@ -9,11 +9,14 @@ import org.joml.Vector3i
 import org.joml.primitives.AABBi
 import org.joml.primitives.AABBic
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.valkyrienskies.physics_api.RigidBodyInertiaData
 import org.valkyrienskies.physics_api.RigidBodyTransform
+import org.valkyrienskies.physics_api.UsingDeletedReferenceException
 import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.assertVecNearlyEquals
 import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.generateUnitInertiaData
 import kotlin.math.PI
@@ -371,4 +374,25 @@ class TestRigidBody {
             physicsWorldReference.deletePhysicsWorldResources()
         }
     }
+
+    @Test
+    fun testIsStaticAfterDeletedAndUnsafe() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(0, Vector3i(0, 0, 0), Vector3i(15, 15, 15), totalVoxelRegion)
+            voxelBodyReference.isStatic = true
+            assertEquals(true, voxelBodyReference.isStatic)
+            voxelBodyReference.isStatic = false
+            assertEquals(false, voxelBodyReference.isStatic)
+            assertFalse(voxelBodyReference.hasBeenDeleted())
+            physicsWorldReference.deleteRigidBody(voxelBodyReference.rigidBodyId)
+            assertTrue(voxelBodyReference.hasBeenDeleted())
+            assertThrows<UsingDeletedReferenceException> { voxelBodyReference.isStatic }
+            assertThrows<IllegalArgumentException> { voxelBodyReference.isStaticUnsafe }
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
 }
