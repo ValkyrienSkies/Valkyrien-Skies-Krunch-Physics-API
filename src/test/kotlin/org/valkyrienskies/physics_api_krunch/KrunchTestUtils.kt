@@ -4,6 +4,7 @@ import org.joml.Matrix3d
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.joml.Vector3ic
+import org.joml.primitives.AABBdc
 import org.junit.jupiter.api.Assertions
 import org.valkyrienskies.physics_api.PhysicsWorldReference
 import org.valkyrienskies.physics_api.RigidBodyInertiaData
@@ -65,5 +66,17 @@ internal object KrunchTestUtils {
         Assertions.assertEquals(expected.x(), actual.x(), epsilon)
         Assertions.assertEquals(expected.y(), actual.y(), epsilon)
         Assertions.assertEquals(expected.z(), actual.z(), epsilon)
+    }
+
+    /**
+     * Asserts that two [Vector3dc] are *nearly* equal, within [epsilon] precision.
+     */
+    internal fun assertAABBdcNearlyEquals(expected: AABBdc, actual: AABBdc, epsilon: Double = 1e-8) {
+        Assertions.assertEquals(expected.minX(), actual.minX(), epsilon)
+        Assertions.assertEquals(expected.minY(), actual.minY(), epsilon)
+        Assertions.assertEquals(expected.minZ(), actual.minZ(), epsilon)
+        Assertions.assertEquals(expected.maxX(), actual.maxX(), epsilon)
+        Assertions.assertEquals(expected.maxY(), actual.maxY(), epsilon)
+        Assertions.assertEquals(expected.maxZ(), actual.maxZ(), epsilon)
     }
 }

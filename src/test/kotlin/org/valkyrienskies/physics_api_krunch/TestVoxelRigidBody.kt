@@ -1,7 +1,12 @@
 package org.valkyrienskies.physics_api_krunch
 
+import org.joml.AxisAngle4d
+import org.joml.Matrix4d
+import org.joml.Quaterniond
+import org.joml.Vector3d
 import org.joml.Vector3i
 import org.joml.Vector3ic
+import org.joml.primitives.AABBd
 import org.joml.primitives.AABBi
 import org.joml.primitives.AABBic
 import org.junit.jupiter.api.Assertions
@@ -9,16 +14,19 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.valkyrienskies.physics_api.PhysicsWorldReference
+import org.valkyrienskies.physics_api.RigidBodyTransform
 import org.valkyrienskies.physics_api.voxel_updates.DeleteVoxelShapeUpdate
 import org.valkyrienskies.physics_api.voxel_updates.DenseVoxelShapeUpdate
 import org.valkyrienskies.physics_api.voxel_updates.EmptyVoxelShapeUpdate
 import org.valkyrienskies.physics_api.voxel_updates.KrunchVoxelStates
 import org.valkyrienskies.physics_api.voxel_updates.SparseVoxelShapeUpdate
 import org.valkyrienskies.physics_api_krunch.KrunchNativeRigidBodyReference.VOXEL_STATE_UNLOADED
+import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.assertAABBdcNearlyEquals
 import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.sendDeleteUpdate
 import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.sendDenseUpdate
 import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.sendEmptyUpdate
 import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.sendSparseUpdate
+import kotlin.math.PI
 
 class TestVoxelRigidBody {
     companion object {
@@ -620,6 +628,75 @@ class TestVoxelRigidBody {
                 KrunchVoxelStates.AIR_STATE
             )
             Assertions.assertFalse(voxelBodyReference.getVoxelShapeAABB(aabb))
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    @Test
+    fun testGetAABB() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(
+                    0, Vector3i(0, 0, 0), Vector3i(15, 15, 15),
+                    TestRigidBody.totalVoxelRegion
+                )
+            voxelBodyReference.inertiaData = KrunchTestUtils.generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
+            val aabb = AABBd()
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 1, 1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getAABB(aabb))
+            assertEquals(AABBd(0.5, 0.5, 0.5, 1.5, 1.5, 1.5), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(2, 2, 2),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getAABB(aabb))
+            assertEquals(AABBd(0.5, 0.5, 0.5, 2.5, 2.5, 2.5), aabb)
+
+            // Test a translation rigid body transform
+            voxelBodyReference.rigidBodyTransform = RigidBodyTransform(Vector3d(1.0, 2.0, 3.0), Quaterniond())
+            Assertions.assertTrue(voxelBodyReference.getAABB(aabb))
+            assertEquals(AABBd(1.5, 2.5, 3.5, 3.5, 4.5, 5.5), aabb)
+
+            // Test a collision shape offset
+            voxelBodyReference.collisionShapeOffset = Vector3d(-1.5, -1.5, -1.5)
+            Assertions.assertTrue(voxelBodyReference.getAABB(aabb))
+            assertEquals(AABBd(0.0, 1.0, 2.0, 2.0, 3.0, 4.0), aabb)
+
+            // Test a translation and rotation rigid body transform
+            voxelBodyReference.rigidBodyTransform =
+                RigidBodyTransform(Vector3d(1.0, 2.0, 3.0), Quaterniond(AxisAngle4d(PI / 4.0, 0.0, 1.0, 0.0)))
+            voxelBodyReference.collisionShapeOffset = Vector3d()
+            Assertions.assertTrue(voxelBodyReference.getAABB(aabb))
+            assertAABBdcNearlyEquals(
+                AABBd(0.5, 0.5, 0.5, 2.5, 2.5, 2.5).transform(
+                    Matrix4d().translate(1.0, 2.0, 3.0).rotate(PI / 4.0, 0.0, 1.0, 0.0)
+                ),
+                aabb
+            )
+
+            // Test a translation and rotation rigid body transform with a collision shape offset
+            voxelBodyReference.collisionShapeOffset = Vector3d(-1.5, -1.5, -1.5)
+            Assertions.assertTrue(voxelBodyReference.getAABB(aabb))
+            assertAABBdcNearlyEquals(
+                AABBd(0.5, 0.5, 0.5, 2.5, 2.5, 2.5).transform(
+                    Matrix4d().translate(1.0, 2.0, 3.0).rotate(PI / 4.0, 0.0, 1.0, 0.0).translate(-1.5, -1.5, -1.5)
+                ),
+                aabb
+            )
         } finally {
             physicsWorldReference.deletePhysicsWorldResources()
         }
