@@ -20,6 +20,7 @@ import org.valkyrienskies.physics_api.voxel_updates.DenseVoxelShapeUpdate
 import org.valkyrienskies.physics_api.voxel_updates.EmptyVoxelShapeUpdate
 import org.valkyrienskies.physics_api.voxel_updates.KrunchVoxelStates
 import org.valkyrienskies.physics_api.voxel_updates.SparseVoxelShapeUpdate
+import org.valkyrienskies.physics_api.voxel_updates.VoxelRigidBodyShapeUpdates
 import org.valkyrienskies.physics_api_krunch.KrunchNativeRigidBodyReference.VOXEL_STATE_UNLOADED
 import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.assertAABBdcNearlyEquals
 import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.sendDeleteUpdate
@@ -667,6 +668,53 @@ class TestVoxelRigidBody {
 
             // When [voxelBodyReference.isVoxelTerrainFullyLoaded] is true we should return the actual AABB of the loaded blocks
             voxelBodyReference.isVoxelTerrainFullyLoaded = true
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(1, 1, 1, 1, 1, 1), aabb)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
+    /**
+     * This test verifies that the AABB generated is still correct after we overwrite an existing voxel chunk with a
+     * [DenseVoxelShapeUpdate].
+     */
+    @Test
+    fun testGetVoxelShapeAABB4() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(
+                    0, Vector3i(0, 0, 0), Vector3i(15, 15, 15),
+                    TestRigidBody.totalVoxelRegion
+                )
+            voxelBodyReference.inertiaData = KrunchTestUtils.generateUnitInertiaData()
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+
+
+            val aabb = AABBi()
+            // When [voxelBodyReference.isVoxelTerrainFullyLoaded] is false, the VoxelShape AABB must be [initiallyDefinedRegionAABB]
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(-129, -129, -129, -129, -129, -129), aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 1, 1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(1, 1, 1, 1, 1, 1), aabb)
+
+            // Overwrite the voxel chunk we created above with a [DenseVoxelShapeUpdate]
+            val denseVoxelShapeUpdate = DenseVoxelShapeUpdate(0, 0, 0, true)
+            denseVoxelShapeUpdate.setVoxel(1, 1, 1, KrunchVoxelStates.SOLID_STATE)
+            val voxelShapeUpdates = VoxelRigidBodyShapeUpdates(voxelBodyReference.rigidBodyId, arrayOf(denseVoxelShapeUpdate))
+            physicsWorldReference.queueVoxelShapeUpdates(arrayOf(voxelShapeUpdates))
+            // Tick the physics world to apply the queued voxel shape updates
+            physicsWorldReference.tick(Vector3d(), 1.0, false)
+
+            // Make sure the AABB hasn't changed
             Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
             assertEquals(AABBi(1, 1, 1, 1, 1, 1), aabb)
         } finally {
