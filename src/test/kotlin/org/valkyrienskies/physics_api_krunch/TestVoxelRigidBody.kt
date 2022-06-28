@@ -633,6 +633,47 @@ class TestVoxelRigidBody {
         }
     }
 
+    /**
+     * This test verifies that we use the initially defined region of blocks as the AABB until the voxel terrain is
+     * fully loaded.
+     */
+    @Test
+    fun testGetVoxelShapeAABB3() {
+        val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
+        try {
+            val initiallyDefinedRegionAABB: AABBic = AABBi(Vector3i(0, 0, 0), Vector3i(15, 15, 15))
+            val voxelBodyReference =
+                physicsWorldReference.createVoxelRigidBody(
+                    0, Vector3i(0, 0, 0), Vector3i(15, 15, 15),
+                    TestRigidBody.totalVoxelRegion
+                )
+            voxelBodyReference.inertiaData = KrunchTestUtils.generateUnitInertiaData()
+            // Set fully loaded to allow this body to move
+            voxelBodyReference.isVoxelTerrainFullyLoaded = false
+
+            val aabb = AABBi()
+            // When [voxelBodyReference.isVoxelTerrainFullyLoaded] is false, the VoxelShape AABB must be [initiallyDefinedRegionAABB]
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(initiallyDefinedRegionAABB, aabb)
+
+            KrunchTestUtils.setBlock(
+                physicsWorldReference,
+                voxelBodyReference.rigidBodyId,
+                Vector3i(1, 1, 1),
+                KrunchVoxelStates.SOLID_STATE
+            )
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(initiallyDefinedRegionAABB, aabb)
+
+            // When [voxelBodyReference.isVoxelTerrainFullyLoaded] is true we should return the actual AABB of the loaded blocks
+            voxelBodyReference.isVoxelTerrainFullyLoaded = true
+            Assertions.assertTrue(voxelBodyReference.getVoxelShapeAABB(aabb))
+            assertEquals(AABBi(1, 1, 1, 1, 1, 1), aabb)
+        } finally {
+            physicsWorldReference.deletePhysicsWorldResources()
+        }
+    }
+
     @Test
     fun testGetAABB() {
         val physicsWorldReference = KrunchBootstrap.createKrunchPhysicsWorld() as KrunchNativePhysicsWorldReference
