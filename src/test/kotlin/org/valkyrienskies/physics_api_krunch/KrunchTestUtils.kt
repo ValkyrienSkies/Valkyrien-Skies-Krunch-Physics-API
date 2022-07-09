@@ -1,6 +1,7 @@
 package org.valkyrienskies.physics_api_krunch
 
 import org.joml.Matrix3d
+import org.joml.Quaterniondc
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.joml.Vector3ic
@@ -66,6 +67,16 @@ internal object KrunchTestUtils {
         Assertions.assertEquals(expected.x(), actual.x(), epsilon)
         Assertions.assertEquals(expected.y(), actual.y(), epsilon)
         Assertions.assertEquals(expected.z(), actual.z(), epsilon)
+    }
+
+    /**
+     * Asserts that two [Vector3dc] are *nearly* equal, within [epsilon] precision.
+     */
+    internal fun assertQuaternionNearlyEquals(expected: Quaterniondc, actual: Quaterniondc, epsilon: Double = 1e-8) {
+        Assertions.assertEquals(expected.x(), actual.x(), epsilon)
+        Assertions.assertEquals(expected.y(), actual.y(), epsilon)
+        Assertions.assertEquals(expected.z(), actual.z(), epsilon)
+        Assertions.assertEquals(expected.w(), actual.w(), epsilon)
     }
 
     /**

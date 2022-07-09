@@ -17,6 +17,7 @@ import org.junit.jupiter.api.assertThrows
 import org.valkyrienskies.physics_api.RigidBodyInertiaData
 import org.valkyrienskies.physics_api.RigidBodyTransform
 import org.valkyrienskies.physics_api.UsingDeletedReferenceException
+import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.assertQuaternionNearlyEquals
 import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.assertVecNearlyEquals
 import org.valkyrienskies.physics_api_krunch.KrunchTestUtils.generateUnitInertiaData
 import kotlin.math.PI
@@ -368,8 +369,13 @@ class TestRigidBody {
             physicsWorldReference.tick(Vector3d(), 1.0, true)
             assertEquals(Vector3d(), voxelBodyReference.totalInvariantForceNextPhysTick)
 
-            // Assert that the rigid body was moved by the appropriate amount
+            val transform = voxelBodyReference.rigidBodyTransform
+
+            // Assert that the rigid body was moved by the appropriate amount, and that is has not rotated
+            assertVecNearlyEquals(Vector3d(0.0, 0.0, 0.0), voxelBodyReference.omega)
             assertVecNearlyEquals(Vector3d(3.5, 2.5, 1.5), voxelBodyReference.velocity)
+            assertVecNearlyEquals(Vector3d(1.925E+0, 1.375E+0, 8.250E-1), transform.position)
+            assertQuaternionNearlyEquals(Quaterniond(0.0, 0.0, 0.0, 1.0), transform.rotation)
         } finally {
             physicsWorldReference.deletePhysicsWorldResources()
         }
