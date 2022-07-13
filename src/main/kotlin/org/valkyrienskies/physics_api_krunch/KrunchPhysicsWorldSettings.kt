@@ -11,5 +11,6 @@ open class KrunchPhysicsWorldSettings(
     override var solverType: SolverType = SolverType.JACOBI,
     override var maxCollisionPoints: Int = 4,
     override var maxCollisionPointDepth: Double = 1.0,
-    override var maxDePenetrationSpeed: Double = 1e4
+    override var maxDePenetrationSpeed: Double = 1e4,
+    override var maxVoxelShapeCollisionPoints: Int = 64
 ) : KrunchPhysicsWorldSettingsc

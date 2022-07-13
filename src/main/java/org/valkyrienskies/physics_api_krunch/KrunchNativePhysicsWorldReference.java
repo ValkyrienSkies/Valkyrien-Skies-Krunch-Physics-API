@@ -52,7 +52,7 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
             settingsWrapper.getCollisionRestitutionCompliance(), settingsWrapper.getDynamicFrictionCompliance(),
             settingsWrapper.getSpeculativeContactDistance(), settingsWrapper.getSolverType().getSolverName(),
             settingsWrapper.getMaxCollisionPoints(), settingsWrapper.getMaxCollisionPointDepth(),
-            settingsWrapper.getMaxDePenetrationSpeed());
+            settingsWrapper.getMaxDePenetrationSpeed(), settingsWrapper.getMaxVoxelShapeCollisionPoints());
     }
 
     @Override
@@ -98,7 +98,7 @@ class KrunchNativePhysicsWorldReference implements PhysicsWorldReference {
 
     private static native void tick(long physicsWorldPointer, double gravityX, double gravityY, double gravityZ, double timeStep, boolean simulatePhysics);
 
-    private static native void setSettings(long physicsWorldPointer, int subSteps, int iterations, double solverIterationWeight, double collisionCompliance, double collisionRestitutionCompliance, double dynamicFrictionCompliance, double speculativeContactDistance, String solverType, int maxCollisionPoints, double maxCollisionPointDepth, double maxDePenetrationSpeed);
+    private static native void setSettings(long physicsWorldPointer, int subSteps, int iterations, double solverIterationWeight, double collisionCompliance, double collisionRestitutionCompliance, double dynamicFrictionCompliance, double speculativeContactDistance, String solverType, int maxCollisionPoints, double maxCollisionPointDepth, double maxDePenetrationSpeed, int maxVoxelShapeCollisionPoints);
 
     private static native boolean deleteRigidBody(long physicsWorldPointer, int rigidBodyId);
     // endregion

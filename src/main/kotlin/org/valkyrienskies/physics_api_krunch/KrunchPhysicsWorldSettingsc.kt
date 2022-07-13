@@ -86,4 +86,12 @@ interface KrunchPhysicsWorldSettingsc {
      * creating explosions.
      */
     val maxDePenetrationSpeed: Double
+
+    /**
+     * The maximum number of collision points a voxel shape will use. This changes when we transition to higher levels
+     * of LOD, higher numbers result in lower LOD.
+     *
+     * However, keeping voxel shapes at lower LOD can slow down the physics engine.
+     */
+    val maxVoxelShapeCollisionPoints: Int
 }
